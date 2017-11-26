@@ -294,13 +294,16 @@ tests config msg (t:ts) ntest nfail stamps
         Undef -> tests config msg ts ntest (nfail+1) stamps
         Ok    -> tests config msg ts (ntest+1) nfail (stamp t : stamps)
         Falsified results -> do
-          putStr $
+          putStrLn $
             msg ++ " failed\n" ++
             "Falsified by " ++ nth (ntest+1) ++ " test" ++
-            (if null (args t) then "." else ".\nArguments:") ++ "\n" ++
-            unlines (args t) ++
-            if null results then "no result\n"
-              else "Results:\n" ++ unlines (nub results)
+            (if null (args t) then "." else ".\nArguments:")
+          mapIO_ (\a -> catch (putStrLn a) (\_ -> putStrLn "???")) (args t)
+          if null results
+            then putStrLn "no result"
+            else do putStrLn "Results:"
+                    catch (putStr (unlines (nub results)))
+                          (\_ -> putStrLn "???")
           return False
         Ambigious bs results -> do
           putStr $
