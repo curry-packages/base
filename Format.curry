@@ -10,7 +10,7 @@
 --- <http://pubs.opengroup.org/onlinepubs/009695399/functions/fprintf.html>
 ---
 --- @author Jasper Sikorra - jsi@informatik.uni-kiel.de
---- @version March 2014
+--- @version November 2017
 --- @category general
 ------------------------------------------------------------------------------
 module Format(showChar,showInt,showFloat,showString) where
@@ -282,17 +282,36 @@ onePrePoint (Floater s m1 m2 e) | m1 == "0" && m2 == ""       =
 
 roundFloater :: Int -> Floater -> Floater
 roundFloater n (Floater s m1 m2 e) =
-  if (length m2 <= n) then Floater s m1 (m2 ++ replicate (n - length m2) '0') e
-  else Floater s m1 (round (take (n+1) m2)) e     
+    if (length m2 <= n)
+      then Floater s m1 (m2 ++ replicate (n - length m2) '0') e
+      else
+        if (digitToInt (m2 !! n) < 5)
+          then Floater s m1 (take n m2) e
+          else roundUp (Floater s m1 (take n m2) e)
+  where
+    roundUp :: Floater -> Floater
+    roundUp (Floater s m1 m2 e) = Floater s m1Result m2Result e
+      where
+        (m2Result,  m2Overflow) = roundStringUp m2
+        (m1Rounded, m1Overflow) = if m2Overflow
+                                    then roundStringUp m1
+                                    else (m1, False)
+        m1Result = if m1Overflow
+                     then "1" ++ m1Rounded
+                     else m1Rounded
+    roundStringUp :: String -> (String, Bool)
+    roundStringUp s = let (res, overflow) = roundBigEndianStrUp (reverse s) True
+                      in (reverse res, overflow)
 
-round :: String -> String
-round ""          = ""
-round [_]         = ""
-round st@(_:_:_) =
-  let (con,l)     = splitAt (length st-2) st
-      n           = digitToInt (head l)
-      r           = digitToInt (head (tail l))
-  in con ++ [if_then_else (r < 5) (intToDigit n) (intToDigit (n+1))]
+    roundBigEndianStrUp :: String -> Bool -> (String, Bool)
+    roundBigEndianStrUp ""     b     = ("", b)
+    roundBigEndianStrUp (c:cs) False = (c:cs, False)
+    roundBigEndianStrUp (c:cs) True  = let n = digitToInt c
+                                       in if n == 9
+                                            then
+                                              let (rs, overflow) = roundBigEndianStrUp cs True
+                                              in  ('0':rs, overflow)
+                                            else (show (n+1) ++ cs, False)
 
 --- FLOATER DATA TYPE END ------------------------
 
