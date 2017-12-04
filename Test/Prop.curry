@@ -26,7 +26,7 @@ module Test.Prop (
   -- test specification:
   PropIO, returns, sameReturns, toError, toIOError,
 
-  Prop, (==>), for,
+  Prop, (==>), for, forAll,
 
   is, isAlways, isEventually, uniquely, always, eventually,
   failing, successful, deterministic, (-=-), (<~>), (~>), (<~), (<~~>),
@@ -168,6 +168,11 @@ _ #> _ = propUndefinedError "#>"
 --- satisfy property `p y`.
 for :: a -> (a -> Prop) -> Prop
 for _ _ = propUndefinedError "for"
+
+--- The property `forAll xs p` is satisfied if all values `x` of the list `xs`
+--- satisfy property `p x`.
+forAll :: [a] -> (a -> Prop) -> Prop
+forAll _ _ = propUndefinedError "forAll"
 
 -------------------------------------------------------------------------
 -- Test Annotations
