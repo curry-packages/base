@@ -26,7 +26,7 @@ module Test.EasyCheck (
 
   test, is, isAlways, isEventually, uniquely, always, eventually,
   failing, successful, deterministic, (-=-), (<~>), (~>), (<~), (<~~>),
-  (#), (#<), (#>),
+  (#), (#<), (#>), (<=>),
   solutionOf,
 
   -- test annotations
@@ -46,7 +46,7 @@ import SearchTree   ( SearchTree, someSearchTree )
 import SearchTreeTraversal
 
 infix  1 `is`, `isAlways`, `isEventually`
-infix  1 -=-, <~>, ~>, <~, <~~>, `trivial`, #, #<, #>
+infix  1 -=-, <~>, ~>, <~, <~~>, `trivial`, #, #<, #>, <=>
 infix  1 `returns`, `sameReturns`
 infixr 0 ==>
 
@@ -285,6 +285,13 @@ forAllValues c vals f =
  Prop $
   diagonal
     [[ updArgs (show y:) t | let Prop ts = c (f y), t <- ts ] | y <- vals ]
+
+--- The property `f <=> g` is satisfied if `f` and `g` are equivalent
+--- operations, i.e., they can be replaced in any context without changing
+--- the computed results.
+(<=>) :: a -> a -> Prop
+_ <=> _ = error $
+  "Test.Prop.<=> not executable. Use CurryCheck to test this property!"
 
 -------------------------------------------------------------------------
 -- Test Annotations

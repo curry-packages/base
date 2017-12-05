@@ -30,7 +30,7 @@ module Test.Prop (
 
   is, isAlways, isEventually, uniquely, always, eventually,
   failing, successful, deterministic, (-=-), (<~>), (~>), (<~), (<~~>),
-  (#), (#<), (#>),
+  (#), (#<), (#>), (<=>),
   solutionOf,
 
   -- test annotations
@@ -42,7 +42,7 @@ module Test.Prop (
   ) where
 
 infix  1 `is`, `isAlways`, `isEventually`
-infix  1 -=-, <~>, ~>, <~, <~~>, `trivial`, #, #<, #>
+infix  1 -=-, <~>, ~>, <~, <~~>, `trivial`, #, #<, #>, <=>
 infix  1 `returns`, `sameReturns`
 infixr 0 ==>
 
@@ -173,6 +173,12 @@ for _ _ = propUndefinedError "for"
 --- satisfy property `p x`.
 forAll :: [a] -> (a -> Prop) -> Prop
 forAll _ _ = propUndefinedError "forAll"
+
+--- The property `f <=> g` is satisfied if `f` and `g` are equivalent
+--- operations, i.e., they can be replaced in any context without changing
+--- the computed results.
+(<=>) :: a -> a -> Prop
+_ <=> _ = propUndefinedError "#"
 
 -------------------------------------------------------------------------
 -- Test Annotations
