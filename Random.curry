@@ -96,7 +96,7 @@ getRandomSeed =
   getClockTime >>= \time ->
   getCPUTime >>= \msecs ->
   let (CalendarTime y mo d h m s _) = toUTCTime time
-   in return ((y+mo+d+h+m*s*(msecs+1)) `mod` two16)
+   in return ((y+mo+d+h+(m+1)*(s+1)*(msecs+1)) `mod` two16)
                             
 --- Computes a random permutation of the given list.
 ---
