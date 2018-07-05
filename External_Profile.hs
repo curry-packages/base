@@ -14,7 +14,16 @@ instance ConvertCurryHaskell C_ProcessInfo C_ProcessInfo where
   fromCurry = id
 
 getProcessInfos :: IO [(C_ProcessInfo, Int)]
-#if __GLASGOW_HASKELL__ > 702
+#if __GLASGOW_HASKELL__ > 802
+getProcessInfos = do
+  stats <- getRTSStats
+  return [ (C_RunTime           , fromIntegral (mutator_cpu_ns      stats * 1000))
+         , (C_ElapsedTime       , fromIntegral (mutator_elapsed_ns  stats * 1000))
+         , (C_Heap              , fromIntegral (max_live_bytes      stats))
+         , (C_Memory            , fromIntegral (max_live_bytes      stats))
+         , (C_GarbageCollections, fromIntegral (gcs                 stats))
+         ]
+#elif __GLASGOW_HASKELL__ > 702
 getProcessInfos = do
   stats <- getGCStats
   return [ (C_RunTime           , floor (mutatorCpuSeconds   stats * 1000))
