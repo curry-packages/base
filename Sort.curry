@@ -62,7 +62,8 @@ permSort = permSortBy (<=)
 --- of the input. This is not a usable way to sort a list but it can be used
 --- as a specification of other sorting algorithms.
 permSortBy :: (a -> a -> Bool) -> [a] -> [a]
-permSortBy leq xs | ys == perm xs && sortedBy leq ys = ys  where ys free
+permSortBy leq xs | sortedBy leq ys = ys
+ where ys = perm xs
 
 --- Computes a permutation of a list.
 perm :: [a] -> [a]
