@@ -1,29 +1,7 @@
-module Control.Applicative where
+module Control.Applicative
+  (Applicative(..), liftA, liftA3) where
 
 infixl 4 <*>, <*, *>
-
---- Typeclass for Applicative-Functors
-class Functor f => Applicative f where
-  pure  :: a -> f a
-
-  (<*>) :: f (a -> b) -> f a -> f b
-
-  (*>)  :: f a        -> f b -> f b
-  m *> n = (id <$ m) <*> n
-
-  (<*)  :: f a        -> f b -> f a
-  (<*) = liftA2 const
-
-  liftA2 :: (a -> b -> c) -> f a -> f b -> f c
-  liftA2 f x = (<*>) (fmap f x)
-
-instance Applicative Maybe where
-  pure = Just
-
-  Just f  <*> Just a  = Just (f a)
-  Nothing <*> Just _  = Nothing
-  Just _  <*> Nothing = Nothing
-  Nothing <*> Nothing = Nothing
 
 --- Lift a function to actions.
 --- This function may be used as a value for `fmap` in a `Functor` instance.
