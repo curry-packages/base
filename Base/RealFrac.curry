@@ -6,6 +6,10 @@ import Base.Num
 import Base.Fractional
 import Base.Real
 import Base.Integral
+import Base.Ord
+import Base.Function
+import Base.Eval
+import Base.Error
 
 class (Real a, Fractional a) => RealFrac a where
   properFraction :: Integral b => a -> (b, a)

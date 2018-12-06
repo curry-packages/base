@@ -10,6 +10,8 @@ import Base.List
 import Base.Eq
 import Base.Ord
 import Base.Eval
+import Base.Num
+import Base.Failed
 
 --- Returns true if the argument is an uppercase letter.
 isUpper :: Char -> Bool

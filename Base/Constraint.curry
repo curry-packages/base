@@ -9,6 +9,9 @@ module Base.Constraint (
 
 import Base.Types
 import Base.IO
+import Base.Eq
+import Base.Monad
+import Base.Failed
 
 infix 4 =:=, =:<=
 #ifdef __PAKCS__

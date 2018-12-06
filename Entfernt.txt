@@ -28,11 +28,11 @@ SetFunctions
 Sort
 Syystem.Console.ANSI.Codes
 System.Directory
-System.Environment  (wegen Data.Global muss es raus)
+System.Environment  (wegen Abhängigkeit von Data.Global muss es raus)
 System.FilePath
 System.Process
 System.Random
 Test.*
-Text.Show (Der Großteil ist noch dabei)
+Text.Show (Der Großteil ist noch dabei in der Prelude)
 Traversal
 ValueSequence

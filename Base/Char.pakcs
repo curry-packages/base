@@ -1,0 +1,12 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE primitives SYSTEM "http://www.informatik.uni-kiel.de/~pakcs/primitives.dtd">
+<primitives>
+ <primitive name="prim_ord" arity="1">
+  <library>prim_standard</library>
+  <entry>prim_ord</entry>
+ </primitive>
+ <primitive name="prim_chr" arity="1">
+  <library>prim_standard</library>
+  <entry>prim_chr</entry>
+ </primitive>
+</primitives>

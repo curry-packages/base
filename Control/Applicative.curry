@@ -1,8 +1,6 @@
 module Control.Applicative
   (Applicative(..), liftA, liftA3) where
 
-infixl 4 <*>, <*, *>
-
 --- Lift a function to actions.
 --- This function may be used as a value for `fmap` in a `Functor` instance.
 liftA :: Applicative f => (a -> b) -> f a -> f b

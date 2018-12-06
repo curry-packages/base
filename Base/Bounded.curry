@@ -3,6 +3,8 @@ module Base.Bounded (Bounded(..)) where
 
 import Base.Types
 import Base.Char
+import Base.Num
+import Base.Error
 
 class Bounded a where
   minBound, maxBound :: a

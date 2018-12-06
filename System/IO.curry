@@ -211,7 +211,7 @@ prim_hPutChar external
 
 --- Puts a string to an output handle.
 hPutStr :: Handle -> String -> IO ()
-hPutStr _ []     = done
+hPutStr _ []     = return ()
 hPutStr h (c:cs) = hPutChar h c >> hPutStr h cs
 
 --- Puts a string with a newline to an output handle.

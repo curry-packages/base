@@ -8,6 +8,10 @@ import Base.Bounded
 import Base.Ord
 import Base.Function
 import Base.Num
+import Base.Failed
+import Base.Bool
+import Base.Eval
+import Base.Error
 
 class Enum a where
   succ :: a -> a

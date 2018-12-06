@@ -11,6 +11,10 @@ import Base.Monad
 import Base.Show
 import Base.String
 import Base.Error
+import Base.Eq
+import Base.List
+import Base.Eval
+import Base.Function
 
 external data IO _
 

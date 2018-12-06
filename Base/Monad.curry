@@ -8,6 +8,7 @@ import Base.Applicative
 import Base.Error
 import Base.List
 import Base.Function
+import Base.String
 
 infixl 1 >>, >>=
 

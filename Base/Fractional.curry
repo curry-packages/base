@@ -3,6 +3,8 @@ module Base.Fractional (Fractional(..)) where
 
 import Base.Types
 import Base.Num
+import Base.Eval
+import Base.Error
 
 infixl 7 /
 

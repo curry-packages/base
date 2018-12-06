@@ -1,10 +1,15 @@
-{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE NoImplicitPrelude, CPP #-}
 module Base.Integral (Integral (..), even, odd, fromIntegral, realToFrac) where
 
 import Base.Types
 import Base.Num
 import Base.Fractional
 import Base.Real
+import Base.Eval
+import Base.Bool
+import Base.Eq
+import Base.Error
+import Base.Function
 import Base.Enum
 
 infixl 7 `div`, `mod`, `quot`, `rem`

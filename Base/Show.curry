@@ -5,6 +5,14 @@ module Base.Show
 
 import Base.Types
 import Base.String
+import Base.Real
+import Base.List
+import Base.Ord
+import Base.Eq
+import Base.Bool
+import Base.Eval
+import Base.Function
+import Base.Failed
 
 type ShowS = String -> String
 

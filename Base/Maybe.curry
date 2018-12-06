@@ -9,6 +9,10 @@ import Base.Eq
 import Base.Ord
 import Base.Read
 import Base.Show
+import Base.Bool
+import Base.Function
+import Base.List
+import Base.Failed
 
 data Maybe a = Nothing | Just a
  deriving (Eq, Ord, Show, Read)

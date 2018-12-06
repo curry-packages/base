@@ -9,6 +9,8 @@ import Base.Ord
 import Base.Error
 import Base.Failed
 
+default (Int, Float)
+
 infixl 6 +, -
 infixl 7 *
 

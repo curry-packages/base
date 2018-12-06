@@ -30,6 +30,7 @@ module Prelude
   , module Base.Eval
   , module Base.Function
   , module Base.Bool
+  , module Base.Either
   , module Base.Pair
   , module Base.List
   , module Base.Maybe
@@ -64,6 +65,7 @@ import Base.String
 import Base.Eval
 import Base.Function
 import Base.Bool
+import Base.Either
 import Base.Pair
 import Base.List
 import Base.Maybe

@@ -3,6 +3,9 @@ module Base.Floating (Floating(..)) where
 
 import Base.Types
 import Base.Fractional
+import Base.Eval
+import Base.Num
+import Base.Error
 
 class Fractional a => Floating a where
   pi :: a

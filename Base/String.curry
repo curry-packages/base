@@ -3,6 +3,9 @@ module Base.String (String, lines, unlines, words, unwords) where
 
 import Base.Types
 import Base.Char
+import Base.Eq
+import Base.List
+import Base.Function
 import Base.Failed
 
 type String = [Char]

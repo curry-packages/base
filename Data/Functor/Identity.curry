@@ -6,6 +6,10 @@ newtype Identity a = Identity { runIdentity :: a }
 instance Functor Identity where
   fmap f (Identity a) = Identity $ f a
 
+instance Applicative Identity where
+  pure = Identity
+  Identity f <*> Identity a = Identity (f a)
+
 instance Monad Identity where
   m >>= k = k (runIdentity m)
   return a = Identity a

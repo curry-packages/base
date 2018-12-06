@@ -5,6 +5,14 @@ import Base.Types
 import Base.List
 import Base.Char
 import Base.String
+import Base.Real
+import Base.Num
+import Base.Bool
+import Base.Eq
+import Base.Ord
+import Base.Eval
+import Base.Error
+import Base.Failed
 
 type ReadS a = String -> [(a, String)]
 
