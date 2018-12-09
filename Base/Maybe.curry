@@ -47,7 +47,8 @@ maybe :: b -> (a -> b) -> Maybe a -> b
 maybe n _ Nothing  = n
 maybe _ f (Just x) = f x
 
--- TODO: Not defined in List to avoid cyclic dependency with Monoid -> Maybe -> List
+-- TODO: Not defined in List to avoid cyclic dependency with
+-- Monoid -> Maybe -> List
 --- Looks up a key in an association list.
 lookup :: Eq a => a -> [(a, b)] -> Maybe b
 lookup _ []          = Nothing

@@ -1,5 +1,5 @@
 {-# LANGUAGE NoImplicitPrelude #-}
-module Base.Applicative (Applicative(..)) where
+module Base.Applicative (Applicative(..), when, sequenceA, sequenceA_) where
 
 import Base.Types
 import Base.Functor
@@ -31,3 +31,20 @@ instance Applicative ((->) a) where
   pure = const
   (<*>) f g x = f x (g x)
   liftA2 q f g x = q (f x) (g x)
+
+-- | Conditional execution of 'Applicative' expressions.
+when :: (Applicative f) => Bool -> f () -> f ()
+when p s  = if p then s else pure ()
+
+--- Evaluate each action in the list from left to right, and
+--- collect the results. For a version that ignores the results
+--- see 'sequenceA_'.
+sequenceA :: (Applicative f) => [f a] -> f [a]
+sequenceA []     = pure []
+sequenceA (x:xs) = (:) <$> x <*> sequenceA xs
+
+--- Evaluate each action in the structure from left to right, and
+--- ignore the results. For a version that doesn't ignore the results
+--- see 'sequenceA'.
+sequenceA_ :: (Applicative f) => [f a] -> f ()
+sequenceA_ = foldr (*>) (pure ())

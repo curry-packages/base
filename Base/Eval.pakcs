@@ -1,0 +1,28 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE primitives SYSTEM "http://www.informatik.uni-kiel.de/~pakcs/primitives.dtd">
+<primitives>
+ <primitive name="$!" arity="2">
+  <library>prim_standard</library>
+  <entry>prim_applySeq[raw]</entry>
+ </primitive>
+ <primitive name="$!!" arity="2">
+  <library>prim_standard</library>
+  <entry>prim_applyNormalForm[raw]</entry>
+ </primitive>
+ <primitive name="$#" arity="2">
+  <library>prim_standard</library>
+  <entry>prim_applyNotFree[raw]</entry>
+ </primitive>
+ <primitive name="$##" arity="2">
+  <library>prim_standard</library>
+  <entry>prim_applyGroundNormalForm[raw]</entry>
+ </primitive>
+ <primitive name="seq" arity="2">
+  <library>prim_standard</library>
+  <entry>prim_seq[raw]</entry>
+ </primitive>
+ <primitive name="ensureNotFree" arity="1">
+  <library>prim_standard</library>
+  <entry>prim_ensureNotFree[raw]</entry>
+ </primitive>
+</primitives>

@@ -25,7 +25,6 @@ module Prelude
   , module Base.Functor
   , module Base.Applicative
   , module Base.Monad
-  , module Base.Char
   , module Base.String
   , module Base.Eval
   , module Base.Function
@@ -41,6 +40,7 @@ module Prelude
   , module Base.Error
   , module Base.Internal
   , module Base.Annotation
+  , asTypeOf
   ) where
 
 import Base.Types
@@ -60,7 +60,6 @@ import Base.Monoid
 import Base.Functor
 import Base.Applicative
 import Base.Monad
-import Base.Char
 import Base.String
 import Base.Eval
 import Base.Function
@@ -76,3 +75,11 @@ import Base.Failed
 import Base.Error
 import Base.Internal
 import Base.Annotation
+
+default (Int, Float)
+
+--- `asTypeOf` is a type-restricted version of `const`.
+--- It is usually used as an infix operator, and its typing forces its first
+--- argument (which is usually overloaded) to have the same type as the second.
+asTypeOf :: a -> a -> a
+asTypeOf = const

@@ -10,7 +10,7 @@ module Data.Char
   ( isAscii, isLatin1, isAsciiUpper, isAsciiLower, isControl
   , isUpper, isLower, isAlpha, isDigit, isAlphaNum
   , isBinDigit, isOctDigit, isHexDigit, isSpace
-  , toUpper, toLower, digitToInt, intToDigit
+  , toUpper, toLower, digitToInt, intToDigit, ord, chr
   ) where
 
 --- Returns true if the argument is an ASCII character.
@@ -96,3 +96,18 @@ intToDigit i
   | i >= 0  && i <=  9  =  chr (ord '0' + i)
   | i >= 10 && i <= 15  =  chr (ord 'A' + i - 10)
   | otherwise           =  error "Char.intToDigit: argument not a digit value"
+
+--- Converts a character into its ASCII value.
+ord :: Char -> Int
+ord c = prim_ord $# c
+
+prim_ord :: Char -> Int
+prim_ord external
+
+--- Converts a Unicode value into a character.
+--- Fails if the value is out of bounds.
+chr :: Int -> Char
+chr n | n >= 0 && n <= 1114111 = prim_chr $# n
+
+prim_chr :: Int -> Char
+prim_chr external

@@ -11,6 +11,7 @@ module Debug.Trace
   , assert, assertIO
   ) where
 
+import Control.Monad    (unless)
 import System.IO        (hPutStrLn, stderr)
 import System.IO.Unsafe (unsafePerformIO)
 

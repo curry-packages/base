@@ -1,0 +1,8 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE primitives SYSTEM "http://www.informatik.uni-kiel.de/~pakcs/primitives.dtd">
+<primitives>
+ <primitive name="prim_divFloat" arity="2">
+  <library>prim_float</library>
+  <entry>prim_Float_div</entry>
+ </primitive>
+</primitives>

@@ -1,0 +1,24 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE primitives SYSTEM "http://www.informatik.uni-kiel.de/~pakcs/primitives.dtd">
+<primitives>
+ <primitive name="=:=" arity="2">
+  <library>prim_standard</library>
+  <entry>constrEq[raw]</entry>
+ </primitive>
+ <primitive name="=:&lt;=" arity="2">
+  <library>prim_standard</library>
+  <entry>unifEq[raw]</entry>
+ </primitive>
+ <primitive name="=:&lt;&lt;=" arity="2">
+  <library>prim_standard</library>
+  <entry>unifEqLinear[raw]</entry>
+ </primitive>
+ <primitive name="ifVar" arity="3">
+  <library>prim_standard</library>
+  <entry>prim_ifVar[raw]</entry>
+ </primitive>
+ <primitive name="&amp;" arity="2">
+  <library>prim_standard</library>
+  <entry>prim_concurrent_and[raw]</entry>
+ </primitive>
+</primitives>

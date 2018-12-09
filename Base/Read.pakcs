@@ -1,0 +1,20 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE primitives SYSTEM "http://www.informatik.uni-kiel.de/~pakcs/primitives.dtd">
+<primitives>
+ <primitive name="prim_readNatLiteral" arity="1">
+  <library>prim_readshowterm</library>
+  <entry>prim_readNatLiteral</entry>
+ </primitive>
+ <primitive name="prim_readFloatLiteral" arity="1">
+  <library>prim_readshowterm</library>
+  <entry>prim_readFloatLiteral</entry>
+ </primitive>
+ <primitive name="prim_readCharLiteral" arity="1">
+  <library>prim_readshowterm</library>
+  <entry>prim_readCharLiteral</entry>
+ </primitive>
+ <primitive name="prim_readStringLiteral" arity="1">
+  <library>prim_readshowterm</library>
+  <entry>prim_readStringLiteral</entry>
+ </primitive>
+</primitives>

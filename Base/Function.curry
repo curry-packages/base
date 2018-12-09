@@ -1,6 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 module Base.Function
-  ((.), id, const, asTypeOf, curry, uncurry, flip, until)
+  ((.), id, const, curry, uncurry, flip, until)
   where
 
 import Base.Types
@@ -18,12 +18,6 @@ id x = x
 --- Constant function.
 const :: a -> _ -> a
 const x _ = x
-
---- `asTypeOf` is a type-restricted version of `const`.
---- It is usually used as an infix operator, and its typing forces its first
---- argument (which is usually overloaded) to have the same type as the second.
-asTypeOf :: a -> a -> a
-asTypeOf = const
 
 --- Converts an uncurried function to a curried function.
 curry :: ((a, b) -> c) -> a -> b -> c

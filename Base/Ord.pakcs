@@ -1,0 +1,16 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE primitives SYSTEM "http://www.informatik.uni-kiel.de/~pakcs/primitives.dtd">
+<primitives>
+ <primitive name="prim_ltEqChar" arity="2">
+  <library>prim_standard</library>
+  <entry>prim_leqChar</entry>
+ </primitive>
+ <primitive name="prim_ltEqInt" arity="2">
+  <library>prim_standard</library>
+  <entry>prim_leqNumber</entry>
+ </primitive>
+ <primitive name="prim_ltEqFloat" arity="2">
+  <library>prim_standard</library>
+  <entry>prim_leqNumber</entry>
+ </primitive>
+</primitives>

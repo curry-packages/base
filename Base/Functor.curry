@@ -1,12 +1,12 @@
 {-# LANGUAGE NoImplicitPrelude #-}
-module Base.Functor (Functor(..)) where
+module Base.Functor (Functor(..), (<$>)) where
 
 import Base.Types
 import Base.Function
 import Base.List
 import Base.Error
 
-infixl 4 <$
+infixl 4 <$>, <$
 
 class Functor f where
   fmap :: (a -> b) -> f a -> f b
@@ -19,3 +19,6 @@ instance Functor [] where
 
 instance Functor ((->) r) where
   fmap = (.)
+
+(<$>) :: Functor f => (a -> b) -> f a -> f b
+(<$>) = fmap
