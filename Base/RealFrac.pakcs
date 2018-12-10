@@ -1,4 +1,12 @@
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE primitives SYSTEM "http://www.informatik.uni-kiel.de/~pakcs/primitives.dtd">
 <primitives>
+ <primitive name="prim_truncateFloat" arity="1">
+  <library>prim_float</library>
+  <entry>prim_truncate</entry>
+ </primitive>
+ <primitive name="prim_roundFloat" arity="1">
+ <library>prim_float</library>
+   <entry>prim_round</entry>
+ </primitive>
 </primitives>

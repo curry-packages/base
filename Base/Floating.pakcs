@@ -1,4 +1,64 @@
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE primitives SYSTEM "http://www.informatik.uni-kiel.de/~pakcs/primitives.dtd">
 <primitives>
+ <primitive name="prim_logFloat" arity="1">
+  <library>prim_float</library>
+  <entry>prim_log</entry>
+ </primitive>
+ <primitive name="prim_expFloat" arity="1">
+  <library>prim_float</library>
+  <entry>prim_exp</entry>
+ </primitive>
+ <primitive name="prim_sqrtFloat" arity="1">
+  <library>prim_float</library>
+  <entry>prim_sqrt</entry>
+ </primitive>
+ <primitive name="prim_sinFloat" arity="1">
+  <library>prim_float</library>
+  <entry>prim_sin</entry>
+ </primitive>
+ <primitive name="prim_cosFloat" arity="1">
+  <library>prim_float</library>
+  <entry>prim_cos</entry>
+ </primitive>
+ <primitive name="prim_tanFloat" arity="1">
+  <library>prim_float</library>
+  <entry>prim_tan</entry>
+ </primitive>
+ <primitive name="prim_asinFloat" arity="1">
+  <library>prim_float</library>
+  <entry>prim_asin</entry>
+ </primitive>
+ <primitive name="prim_acosFloat" arity="1">
+  <library>prim_float</library>
+  <entry>prim_acos</entry>
+ </primitive>
+ <primitive name="prim_atanFloat" arity="1">
+  <library>prim_float</library>
+  <entry>prim_atan</entry>
+ </primitive>
+ <primitive name="prim_sinhFloat" arity="1">
+  <library>prim_float</library>
+  <entry>prim_sinh</entry>
+ </primitive>
+ <primitive name="prim_coshFloat" arity="1">
+  <library>prim_float</library>
+  <entry>prim_cosh</entry>
+ </primitive>
+ <primitive name="prim_tanhFloat" arity="1">
+  <library>prim_float</library>
+  <entry>prim_tanh</entry>
+ </primitive>
+ <primitive name="prim_asinhFloat" arity="1">
+  <library>prim_float</library>
+  <entry>prim_asinh</entry>
+ </primitive>
+ <primitive name="prim_acoshFloat" arity="1">
+  <library>prim_float</library>
+  <entry>prim_acosh</entry>
+ </primitive>
+ <primitive name="prim_atanhFloat" arity="1">
+  <library>prim_float</library>
+  <entry>prim_atanh</entry>
+ </primitive>
 </primitives>

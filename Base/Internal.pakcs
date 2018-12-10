@@ -9,4 +9,12 @@
   <library>prim_standard</library>
   <entry>prim_failure[raw]</entry>
  </primitive>
+ <primitive name="apply" arity="2">
+  <library>prim_standard</library>
+  <entry>prim_apply[raw]</entry>
+ </primitive>
+ <primitive name="cond" arity="2">
+  <library>prim_standard</library>
+  <entry>prim_cond[raw]</entry>
+ </primitive>
 </primitives>
