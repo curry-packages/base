@@ -148,7 +148,7 @@ lex xs = case xs of
          | otherwise  -> []
  where
   isSingle c = c `elem` ",;()[]{}_`"
-  isSymbol c = c `elem` "!@#$%&⋆+./<=>?\\^|:-~"
+  isSymbol c = c `elem` "!@#$%&*+./<=>?\\^|:-~"
   isIdChar c = isAlphaNum c || c `elem` "_'"
   lexFracExp s = case s of
     ('.':c:cs) | isDigit c ->
