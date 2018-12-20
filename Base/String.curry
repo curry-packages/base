@@ -7,6 +7,7 @@ import Base.Eq
 import Base.List
 import Base.Function
 import Base.Failed
+import Base.Internal
 
 type String = [Char]
 

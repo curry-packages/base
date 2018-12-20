@@ -13,6 +13,7 @@ import Base.Ord
 import Base.Eval
 import Base.Error
 import Base.Failed
+import Base.Internal
 
 type ReadS a = String -> [(a, String)]
 

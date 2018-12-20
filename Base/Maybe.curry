@@ -13,6 +13,8 @@ import Base.Bool
 import Base.Function
 import Base.List
 import Base.Failed
+import Base.Types
+
 
 data Maybe a = Nothing | Just a
  deriving (Eq, Ord, Show, Read)

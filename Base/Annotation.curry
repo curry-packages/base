@@ -1,6 +1,8 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 module Base.Annotation (DET, PEVAL) where
 
+import Base.Types
+
 --- Identity type synonym used to mark deterministic operations.
 type DET a = a
 

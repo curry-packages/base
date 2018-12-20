@@ -1,6 +1,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 module Base.Either (Either(..), either) where
 
+import Base.Types
 import Base.Functor
 import Base.Applicative
 import Base.Monad
