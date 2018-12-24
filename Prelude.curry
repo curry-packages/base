@@ -30,17 +30,16 @@ module Prelude
   , module Base.Function
   , module Base.Bool
   , module Base.Either
-  , module Base.Pair
   , module Base.List
   , module Base.Maybe
   , module Base.IO
   , module Base.Constraint
-  , module Base.Nondet
   , module Base.Failed
   , module Base.Error
   , module Base.Internal
-  , module Base.Annotation
-  , asTypeOf
+  , asTypeOf, fst, snd
+  , (?), anyOf, unknown
+  , maybe, lookup
   ) where
 
 import Base.Types
@@ -65,16 +64,13 @@ import Base.Eval
 import Base.Function
 import Base.Bool
 import Base.Either
-import Base.Pair
 import Base.List
 import Base.Maybe
 import Base.IO
 import Base.Constraint
-import Base.Nondet
 import Base.Failed
 import Base.Error
 import Base.Internal
-import Base.Annotation
 
 default (Int, Float)
 
@@ -83,3 +79,36 @@ default (Int, Float)
 --- argument (which is usually overloaded) to have the same type as the second.
 asTypeOf :: a -> a -> a
 asTypeOf = const
+
+--- Selects the first component of a pair.
+fst :: (a, _) -> a
+fst (x, _) = x
+
+--- Selects the second component of a pair.
+snd :: (_, b) -> b
+snd (_, y) = y
+
+--- Non-deterministic choice _par excellence_.
+--- The value of `x ? y` is either `x` or `y`.
+(?) :: a -> a -> a
+x ? _ = x
+_ ? y = y
+
+--- Returns non-deterministically any element of a list.
+anyOf :: [a] -> a
+anyOf = foldr1 (?)
+
+--- Evaluates to a fresh free variable.
+unknown :: _
+unknown = let x free in x
+
+--- Fold on the 'Maybe' Datatype
+maybe :: b -> (a -> b) -> Maybe a -> b
+maybe n _ Nothing  = n
+maybe _ f (Just x) = f x
+
+--- Looks up a key in an association list.
+lookup :: Eq a => a -> [(a, b)] -> Maybe b
+lookup _ []          = Nothing
+lookup k ((x,y):xys) | k == x    = Just y
+                   | otherwise = lookup k xys

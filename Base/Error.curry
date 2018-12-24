@@ -2,6 +2,8 @@
 module Base.Error (error) where
 
 import Base.Eval
+import Base.Types
+
 
 --- Aborts the execution with an error message.
 error :: String -> _

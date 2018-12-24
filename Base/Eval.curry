@@ -47,8 +47,8 @@ ensureNotFree external
 --- Suspends until the result is bound to a non-variable spine.
 ensureSpine :: [a] -> [a]
 ensureSpine l = ensureList (ensureNotFree l)
- where ensureList []     = []
-       ensureList (x:xs) = x : ensureSpine xs
+  where ensureList []     = []
+        ensureList (x:xs) = x : ensureSpine xs
 
 --- Evaluates the argument to normal form and returns it.
 normalForm :: a -> a
