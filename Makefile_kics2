@@ -19,6 +19,8 @@ space     := $(empty) $(empty)
 prefix     = $(patsubst ./%,%,$(dir $(2))$(1)$(notdir $(2)))
 # comma_sep "a b c" = "a, b, c"
 comma_sep  = $(subst $(space),$(comma)$(space),$(1))
+# pack-age-0.0.1 -> pack-age
+version_bounds = $(shell echo "$(1)" | sed 's/\b-\([0-9]\+\(\.[0-9]\+\)*\)\b/ == \1/g')
 
 MODULE_FOLDERS:=$(shell find * -type d)
 TRACE_FOLDERS  =$(addprefix .curry/kics2/,$(MODULE_FOLDERS))
@@ -51,7 +53,7 @@ PACKAGE          = kics2-libraries
 PACKAGE_TRACE    = kics2-libraries-trace
 CABAL_FILE       = $(PACKAGE).cabal
 CABAL_TRACE_FILE = $(PACKAGE_TRACE).cabal
-CABAL_LIBDEPS    = $(call comma_sep,$(LIBDEPS))
+CABAL_LIBDEPS    = $(call version_bounds,$(call comma_sep,$(LIBDEPS)))
 
 # Executable of CurryDoc:
 CURRYDOC := $(shell which curry-doc)
