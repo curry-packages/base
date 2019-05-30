@@ -106,7 +106,7 @@ _ ==> _ = propUndefinedError "==>"
 --- `solutionOf p` returns (non-deterministically) a solution
 --- of predicate `p`. This operation is useful to test solutions
 --- of predicates.
-solutionOf :: (a -> Bool) -> a
+--solutionOf :: Data a => (a -> Bool) -> a
 solutionOf pred = pred x &> x where x free
 
 --- The property `is x p` is satisfied if `x` has a deterministic value

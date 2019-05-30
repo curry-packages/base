@@ -11,7 +11,8 @@
 module Prelude
   (
     -- classes and overloaded functions
-    Eq(..)
+    Data(..)
+  , Eq(..)
   , elem, notElem, lookup
   , Ord(..)
   , Show(..), ShowS, print, shows, showChar, showString, showParen
@@ -63,7 +64,7 @@ infixl 7 *, `div`, `mod`, `quot`, `rem`, /
 infixl 6 +, -
 -- infixr 5 :                          -- declared together with list
 infixr 5 ++
-infix  4 =:=, ==, /=, <, >, <=, >=, =:<=
+infix  4 =:=, ==, /=, <, >, <=, >=, =:<=, ===
 #ifdef __PAKCS__
 infix  4 =:<<=
 #endif
@@ -335,7 +336,7 @@ length          :: [_] -> Int
 length []       = 0
 length (_:xs)   = 1 + length xs
 
-{- 
+{-
 -- This version is more efficient but less usable for verification:
 length :: [_] -> Int
 length xs = len xs 0
@@ -980,7 +981,7 @@ anyOf :: [a] -> a
 anyOf = foldr1 (?)
 
 --- Evaluates to a fresh free variable.
-unknown :: _
+unknown :: Data a => a
 unknown = let x free in x
 
 ----------------------------------------------------------------
@@ -1084,6 +1085,9 @@ instance (Eq a, Eq b, Eq c, Eq d, Eq e, Eq f) => Eq (a, b, c, d, e, f) where
 instance (Eq a, Eq b, Eq c, Eq d, Eq e, Eq f, Eq g) => Eq (a, b, c, d, e, f, g) where
   (a, b, c, d, e, f, g) == (a', b', c', d', e', f', g') = a == a' && b == b' && c == c' && d == d' && e == e' && f == f' && g == g'
 
+instance (Eq a, Eq b, Eq c, Eq d, Eq e, Eq f, Eq g, Eq h) => Eq (a, b, c, d, e, f, g, h) where
+  (a, b, c, d, e, f, g, h) == (a', b', c', d', e', f', g', h') = a == a' && b == b' && c == c' && d == d' && e == e' && f == f' && g == g' && h == h'
+
 -- -------------------------------------------------------------------------
 -- Ord class and related instances and functions
 -- -------------------------------------------------------------------------
@@ -1153,6 +1157,33 @@ instance (Ord a, Ord b, Ord c, Ord d, Ord e) => Ord (a, b, c, d, e) where
      || (a == a' && b == b' && c < c')
      || (a == a' && b == b' && c == c' && d < d')
      || (a == a' && b == b' && c == c' && d == d' && e <= e')
+
+instance (Ord a, Ord b, Ord c, Ord d, Ord e, Ord f) => Ord (a, b, c, d, e, f) where
+  (a, b, c, d, e, f) <= (a', b', c', d', e', f') = a < a'
+     || (a == a' && b < b')
+     || (a == a' && b == b' && c < c')
+     || (a == a' && b == b' && c == c' && d < d')
+     || (a == a' && b == b' && c == c' && d == d' && e < e')
+     || (a == a' && b == b' && c == c' && d == d' && e == e' && f < f')
+
+instance (Ord a, Ord b, Ord c, Ord d, Ord e, Ord f, Ord g) => Ord (a, b, c, d, e, f, g) where
+  (a, b, c, d, e, f, g) <= (a', b', c', d', e', f', g') = a < a'
+     || (a == a' && b < b')
+     || (a == a' && b == b' && c < c')
+     || (a == a' && b == b' && c == c' && d < d')
+     || (a == a' && b == b' && c == c' && d == d' && e < e')
+     || (a == a' && b == b' && c == c' && d == d' && e == e' && f < f')
+     || (a == a' && b == b' && c == c' && d == d' && e == e' && f == f' && g <= g')
+
+instance (Ord a, Ord b, Ord c, Ord d, Ord e, Ord f, Ord g, Ord h) => Ord (a, b, c, d, e, f, g, h) where
+  (a, b, c, d, e, f, g, h) <= (a', b', c', d', e', f', g', h') = a < a'
+     || (a == a' && b < b')
+     || (a == a' && b == b' && c < c')
+     || (a == a' && b == b' && c == c' && d < d')
+     || (a == a' && b == b' && c == c' && d == d' && e < e')
+     || (a == a' && b == b' && c == c' && d == d' && e == e' && f < f')
+     || (a == a' && b == b' && c == c' && d == d' && e == e' && f == f' && g < g')
+     || (a == a' && b == b' && c == c' && d == d' && e == e' && f == f' && g == g' && h <= h')
 
 -- -------------------------------------------------------------------------
 -- Show class and related instances and functions
@@ -1903,3 +1934,60 @@ whenM :: Monad m => Bool -> m () -> m ()
 whenM p act = if p then act else return ()
 
 ----------------------------------------------------------------------------
+
+class Data a where
+  (===)  :: a -> a -> Bool
+  aValue :: a
+
+instance Data Int where
+  (===) = (==)
+  aValue = a where a free
+
+instance Data Float where
+  (===) = (==)
+  aValue = a where a free
+
+instance Data Char where
+  (===) = (==)
+  aValue = a where a free
+
+instance Data a => Data [a] where
+  []     === []     = True
+  []     === (_:_)  = False
+  (_:_)  === []     = False
+  (x:xs) === (y:ys) = x === y && xs === ys
+
+  aValue = [] ? (aValue:aValue)
+
+instance (Data a, Data b) => Data (a, b) where
+  (a1, b1) === (a2, b2) = a1 === a2 && b1 === b2
+  aValue = (aValue, aValue)
+
+instance (Data a, Data b, Data c) => Data (a, b, c) where
+  (a1, b1, c1) === (a2, b2, c2) = a1 === a2 && b1 === b2 && c1 === c2
+  aValue = (aValue, aValue, aValue)
+
+instance (Data a, Data b, Data c, Data d) => Data (a, b, c, d) where
+  (a1, b1, c1, d1) === (a2, b2, c2, d2) =
+    a1 === a2 && b1 === b2 && c1 === c2 && d1 === d2
+  aValue = (aValue, aValue, aValue, aValue)
+
+instance (Data a, Data b, Data c, Data d, Data e) => Data (a, b, c, d, e) where
+  (a1, b1, c1, d1, e1) === (a2, b2, c2, d2, e2) =
+    a1 === a2 && b1 === b2 && c1 === c2 && d1 === d2 && e1 === e2
+  aValue = (aValue, aValue, aValue, aValue, aValue)
+
+instance (Data a, Data b, Data c, Data d, Data e, Data f) => Data (a, b, c, d, e, f) where
+  (a1, b1, c1, d1, e1, f1) === (a2, b2, c2, d2, e2, f2) =
+    a1 === a2 && b1 === b2 && c1 === c2 && d1 === d2 && e1 === e2 && f1 === f2
+  aValue = (aValue, aValue, aValue, aValue, aValue, aValue)
+
+instance (Data a, Data b, Data c, Data d, Data e, Data f, Data g) => Data (a, b, c, d, e, f, g) where
+  (a1, b1, c1, d1, e1, f1, g1) === (a2, b2, c2, d2, e2, f2, g2) =
+    a1 === a2 && b1 === b2 && c1 === c2 && d1 === d2 && e1 === e2 && f1 === f2 && g1 === g2
+  aValue = (aValue, aValue, aValue, aValue, aValue, aValue, aValue)
+
+instance (Data a, Data b, Data c, Data d, Data e, Data f, Data g, Data h) => Data (a, b, c, d, e, f, g, h) where
+  (a1, b1, c1, d1, e1, f1, g1, h1) === (a2, b2, c2, d2, e2, f2, g2, h2) =
+    a1 === a2 && b1 === b2 && c1 === c2 && d1 === d2 && e1 === e2 && f1 === f2 && g1 === g2 && h1 === h2
+  aValue = (aValue, aValue, aValue, aValue, aValue, aValue, aValue, aValue)
