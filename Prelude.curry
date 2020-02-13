@@ -143,7 +143,7 @@ instance (Data a, Data b, Data c, Data d, Data e) => Data (a, b, c, d, e) where
   (a1, b1, c1, d1, e1) === (a2, b2, c2, d2, e2) =
     a1 === a2 && b1 === b2 && c1 === c2 && d1 === d2 && e1 === e2
   aValue = (aValue, aValue, aValue, aValue, aValue)
-  
+
 infix 4 ==, /=
 
 class Eq a where
@@ -1818,13 +1818,16 @@ instance  Functor IO where
 
 instance Applicative IO where
   pure = returnIO
-#ifdef __PAKCS__
-  (*>) = seqIO
-#else
-  m *> k = m >>= \_ -> k
-#endif
   (<*>) = ap
   liftA2 = liftM2
+#ifndef __PAKCS__
+  m *> k = m >>= \_ -> k
+#else
+  (*>) = seqIO
+
+seqIO :: IO a -> IO b -> IO b
+seqIO external
+#endif
 
 instance Alternative IO where
     empty = fail "mzero"
@@ -1840,9 +1843,6 @@ instance MonadFail IO where
 
 bindIO :: IO a -> (a -> IO b) -> IO b
 bindIO external
-
-seqIO :: IO a -> IO b -> IO b
-seqIO external
 
 returnIO :: a -> IO a
 returnIO external
