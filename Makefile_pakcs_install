@@ -8,6 +8,7 @@ CURRY_FILES       :=$(shell cd $(CURRYLIBSDIR) && find * -name "*.curry")
 PAKCS_CURRY_FILES :=$(basename $(shell cd $(CURRYLIBSDIR) && find * -name "*.curry.pakcs"))
 C2P_FILES         :=$(shell cd $(CURRYLIBSDIR) && find * -name "*.pakcs")
 C2P_CURRY_FILES   :=$(addsuffix .curry, $(basename $(C2P_FILES)))
+PAKCS_PL_FILES    :=$(shell cd $(CURRYLIBSDIR) && find * -name "*.pakcs.pl")
 NON_PAKCS_BASENAMES=$(basename $(filter-out $(CURRY_PAKCS_FILES), $(CURRY_FILES)))
 CURRYONLY_FILES    =$(addsuffix .curry, $(filter-out $(basename $(C2P_FILES)), $(NON_PAKCS_BASENAMES)))
 
@@ -19,7 +20,7 @@ CURRENT_MAKEFILE = $(CURRYLIBSDIR)/Makefile_$(CURRYSYSTEM)_install
 .PHONY: install
 install:
 	mkdir -p $(LIBDIR)
-	cd $(LIBDIR) && $(MAKE) -f $(CURRENT_MAKEFILE) $(MODULE_FOLDERS) $(CURRYONLY_FILES) $(PAKCS_CURRY_FILES) $(C2P_CURRY_FILES) $(LIBDIR)/Makefile $(LIBDIR)/VERSION $(LIBDIR)/test.sh
+	cd $(LIBDIR) && $(MAKE) -f $(CURRENT_MAKEFILE) $(MODULE_FOLDERS) $(CURRYONLY_FILES) $(PAKCS_CURRY_FILES) $(C2P_CURRY_FILES) $(PAKCS_PL_FILES) $(LIBDIR)/Makefile $(LIBDIR)/VERSION $(LIBDIR)/test.sh
 
 $(MODULE_FOLDERS): %: $(CURRYLIBSDIR)/%
 	mkdir -p $@
@@ -34,6 +35,9 @@ $(C2P_FILES): %.pakcs: $(CURRYLIBSDIR)/%.pakcs
 	cp $< $@
 
 $(C2P_CURRY_FILES): %.curry: $(CURRYLIBSDIR)/%.curry %.pakcs
+	cp $< $@
+
+$(PAKCS_PL_FILES): %.pakcs.pl: $(CURRYLIBSDIR)/%.pakcs.pl
 	cp $< $@
 
 $(LIBDIR)/Makefile: $(CURRYLIBSDIR)/Makefile_$(CURRYSYSTEM)
