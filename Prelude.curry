@@ -598,10 +598,10 @@ prim_chr external
 --- Adds two integers.
 (+$)   :: Int -> Int -> Int
 #ifdef __PAKCS__
-x +$ y = (prim_Int_plus $# y) $# x
+x +$ y = (prim_plusInt $# y) $# x
 
-prim_Int_plus :: Int -> Int -> Int
-prim_Int_plus external
+prim_plusInt :: Int -> Int -> Int
+prim_plusInt external
 #else
 (+$) external
 #endif
@@ -609,10 +609,10 @@ prim_Int_plus external
 --- Subtracts two integers.
 (-$)   :: Int -> Int -> Int
 #ifdef __PAKCS__
-x -$ y = (prim_Int_minus $# y) $# x
+x -$ y = (prim_minusInt $# y) $# x
 
-prim_Int_minus :: Int -> Int -> Int
-prim_Int_minus external
+prim_minusInt :: Int -> Int -> Int
+prim_minusInt external
 #else
 (-$) external
 #endif
@@ -620,10 +620,10 @@ prim_Int_minus external
 --- Multiplies two integers.
 (*$)   :: Int -> Int -> Int
 #ifdef __PAKCS__
-x *$ y = (prim_Int_times $# y) $# x
+x *$ y = (prim_timesInt $# y) $# x
 
-prim_Int_times :: Int -> Int -> Int
-prim_Int_times external
+prim_timesInt :: Int -> Int -> Int
+prim_timesInt external
 #else
 (*$) external
 #endif
@@ -634,10 +634,10 @@ prim_Int_times external
 --- and the value of <code>-15 `div` 4</code> is <code>-3</code>.
 div_   :: Int -> Int -> Int
 #ifdef __PAKCS__
-x `div_` y = (prim_Int_div $# y) $# x
+x `div_` y = (prim_divInt $# y) $# x
 
-prim_Int_div :: Int -> Int -> Int
-prim_Int_div external
+prim_divInt :: Int -> Int -> Int
+prim_divInt external
 #else
 div_ external
 #endif
@@ -648,10 +648,10 @@ div_ external
 --- and the value of <code>-15 `mod` 4</code> is <code>-3</code>.
 mod_   :: Int -> Int -> Int
 #ifdef __PAKCS__
-x `mod_` y = (prim_Int_mod $# y) $# x
+x `mod_` y = (prim_modInt $# y) $# x
 
-prim_Int_mod :: Int -> Int -> Int
-prim_Int_mod external
+prim_modInt :: Int -> Int -> Int
+prim_modInt external
 #else
 mod_ external
 #endif
@@ -672,10 +672,10 @@ divMod_ external
 --- and the value of <code>-15 `quot` 4</code> is <code>-3</code>.
 quot_ :: Int -> Int -> Int
 #ifdef __PAKCS__
-x `quot_` y = (prim_Int_quot $# y) $# x
+x `quot_` y = (prim_quotInt $# y) $# x
 
-prim_Int_quot :: Int -> Int -> Int
-prim_Int_quot external
+prim_quotInt :: Int -> Int -> Int
+prim_quotInt external
 #else
 quot_ external
 #endif
@@ -686,10 +686,10 @@ quot_ external
 --- and the value of <code>-15 `rem` 4</code> is <code>-3</code>.
 rem_ :: Int -> Int -> Int
 #ifdef __PAKCS__
-x `rem_` y = (prim_Int_rem $# y) $# x
+x `rem_` y = (prim_remInt $# y) $# x
 
-prim_Int_rem :: Int -> Int -> Int
-prim_Int_rem external
+prim_remInt :: Int -> Int -> Int
+prim_remInt external
 #else
 rem_ external
 #endif
@@ -889,13 +889,6 @@ catch :: IO a -> (IOError -> IO a) -> IO a
 catch external
 
 ----------------------------------------------------------------------------
-
---- Converts an arbitrary term into an external string representation.
-show_    :: _ -> String
-show_ x = prim_show $## x
-
-prim_show    :: _ -> String
-prim_show external
 
 --- Converts a term into a string and prints it.
 print :: Show a => a -> IO ()
@@ -1244,16 +1237,16 @@ instance Show a => Show [a] where
 
 instance Show Char where
   -- TODO: own implementation instead of passing to original Prelude functions?
-  showsPrec _ c = showString (show_ c)
+  showsPrec _ c = showString (showCharLiteral c)
 
   showList cs | null cs   = showString "\"\""
-              | otherwise = showString (show_ cs)
+              | otherwise = showString (showStringLiteral cs)
 
 instance Show Int where
-  showsPrec = showSigned (showString . show_)
+  showsPrec = showSigned (showString . showIntLiteral)
 
 instance Show Float where
-  showsPrec = showSigned (showString . show_)
+  showsPrec = showSigned (showString . showFloatLiteral)
 
 showSigned :: Real a => (a -> ShowS) -> Int -> a -> ShowS
 showSigned showPos p x
@@ -1265,11 +1258,33 @@ showTuple ss = showChar '('
              . foldr1 (\s r -> s . showChar ',' . r) ss
              . showChar ')'
 
-appPrec :: Int
-appPrec = 10
+-- Returns the string representation of a character.
+showCharLiteral :: Char -> String
+showCharLiteral x = prim_showCharLiteral $## x
 
-appPrec1 :: Int
-appPrec1 = 11
+prim_showCharLiteral :: Char -> String
+prim_showCharLiteral external
+
+-- Returns the string representation of a string.
+showStringLiteral :: String -> String
+showStringLiteral x = prim_showStringLiteral $## x
+
+prim_showStringLiteral :: String -> String
+prim_showStringLiteral external
+
+-- Returns the string representation of an integer.
+showIntLiteral :: Int -> String
+showIntLiteral x = prim_showIntLiteral $## x
+
+prim_showIntLiteral :: Int -> String
+prim_showIntLiteral external
+
+-- Returns the string representation of a floating point number.
+showFloatLiteral :: Float -> String
+showFloatLiteral x = prim_showFloatLiteral $## x
+
+prim_showFloatLiteral :: Float -> String
+prim_showFloatLiteral external
 
 -- -------------------------------------------------------------------------
 -- Read class and related instances and functions
@@ -1796,38 +1811,38 @@ asTypeOf = const
 
 --- Addition on floats.
 (+.)   :: Float -> Float -> Float
-x +. y = (prim_Float_plus $# y) $# x
+x +. y = (prim_plusFloat $# y) $# x
 
-prim_Float_plus :: Float -> Float -> Float
-prim_Float_plus external
+prim_plusFloat :: Float -> Float -> Float
+prim_plusFloat external
 
 --- Subtraction on floats.
 (-.)   :: Float -> Float -> Float
-x -. y = (prim_Float_minus $# y) $# x
+x -. y = (prim_minusFloat $# y) $# x
 
-prim_Float_minus :: Float -> Float -> Float
-prim_Float_minus external
+prim_minusFloat :: Float -> Float -> Float
+prim_minusFloat external
 
 --- Multiplication on floats.
 (*.)   :: Float -> Float -> Float
-x *. y = (prim_Float_times $# y) $# x
+x *. y = (prim_timesFloat $# y) $# x
 
-prim_Float_times :: Float -> Float -> Float
-prim_Float_times external
+prim_timesFloat :: Float -> Float -> Float
+prim_timesFloat external
 
 --- Division on floats.
 (/.)   :: Float -> Float -> Float
-x /. y = (prim_Float_div $# y) $# x
+x /. y = (prim_divFloat $# y) $# x
 
-prim_Float_div :: Float -> Float -> Float
-prim_Float_div external
+prim_divFloat :: Float -> Float -> Float
+prim_divFloat external
 
 --- Conversion function from integers to floats.
 i2f    :: Int -> Float
-i2f x = prim_i2f $# x
+i2f x = prim_intToFloat $# x
 
-prim_i2f :: Int -> Float
-prim_i2f external
+prim_intToFloat :: Int -> Float
+prim_intToFloat external
 
 -- the end of the standard prelude
 

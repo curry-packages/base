@@ -17,38 +17,6 @@
   <library>prim_standard</library>
   <entry>prim_applyGroundNormalForm[raw]</entry>
  </primitive>
- <primitive name="prim_Int_plus" arity="2">
-  <library>prim_standard</library>
-  <entry>prim_Int_plus</entry>
- </primitive>
- <primitive name="prim_Int_minus" arity="2">
-  <library>prim_standard</library>
-  <entry>prim_Int_minus</entry>
- </primitive>
- <primitive name="prim_Int_times" arity="2">
-  <library>prim_standard</library>
-  <entry>prim_Int_times</entry>
- </primitive>
- <primitive name="prim_Int_div" arity="2">
-  <library>prim_standard</library>
-  <entry>prim_Int_div</entry>
- </primitive>
- <primitive name="prim_Int_mod" arity="2">
-  <library>prim_standard</library>
-  <entry>prim_Int_mod</entry>
- </primitive>
- <primitive name="prim_Int_quot" arity="2">
-  <library>prim_standard</library>
-  <entry>prim_Int_quot</entry>
- </primitive>
- <primitive name="prim_Int_rem" arity="2">
-  <library>prim_standard</library>
-  <entry>prim_Int_rem</entry>
- </primitive>
- <primitive name="prim_negateFloat" arity="1">
-  <library>prim_standard</library>
-  <entry>prim_negateFloat</entry>
- </primitive>
  <primitive name="seq" arity="2">
   <library>prim_standard</library>
   <entry>prim_seq[raw]</entry>
@@ -56,34 +24,6 @@
  <primitive name="ensureNotFree" arity="1">
   <library>prim_standard</library>
   <entry>prim_ensureNotFree[raw]</entry>
- </primitive>
- <primitive name="prim_ord" arity="1">
-  <library>prim_standard</library>
-  <entry>prim_ord</entry>
- </primitive>
- <primitive name="prim_chr" arity="1">
-  <library>prim_standard</library>
-  <entry>prim_chr</entry>
- </primitive>
- <primitive name="prim_show" arity="1">
-  <library>prim_readshowterm</library>
-  <entry>prim_showTerm</entry>
- </primitive>
- <primitive name="prim_readNatLiteral" arity="1">
-  <library>prim_readshowterm</library>
-  <entry>prim_readNatLiteral</entry>
- </primitive>
- <primitive name="prim_readFloatLiteral" arity="1">
-  <library>prim_readshowterm</library>
-  <entry>prim_readFloatLiteral</entry>
- </primitive>
- <primitive name="prim_readCharLiteral" arity="1">
-  <library>prim_readshowterm</library>
-  <entry>prim_readCharLiteral</entry>
- </primitive>
- <primitive name="prim_readStringLiteral" arity="1">
-  <library>prim_readshowterm</library>
-  <entry>prim_readStringLiteral</entry>
  </primitive>
  <primitive name="prim_error" arity="1">
   <library>prim_standard</library>
@@ -141,14 +81,6 @@
   <library>prim_standard</library>
   <entry>prim_return[raw]</entry>
  </primitive>
- <primitive name="prim_putChar" arity="1">
-  <library>prim_standard</library>
-  <entry>prim_putChar</entry>
- </primitive>
- <primitive name="getChar" arity="0">
-  <library>prim_standard</library>
-  <entry>prim_getChar</entry>
- </primitive>
  <primitive name="prim_readFile" arity="1">
   <library>prim_standard</library>
   <entry>prim_readFile</entry>
@@ -170,49 +102,4 @@
   <entry>prim_catch[raw]</entry>
  </primitive>
 
- <primitive name="prim_eqChar" arity="2">
-  <library>prim_standard</library>
-  <entry>prim_eqBasic</entry>
- </primitive>
- <primitive name="prim_eqInt" arity="2">
-  <library>prim_standard</library>
-  <entry>prim_eqBasic</entry>
- </primitive>
- <primitive name="prim_eqFloat" arity="2">
-  <library>prim_standard</library>
-  <entry>prim_eqBasic</entry>
- </primitive>
- <primitive name="prim_ltEqChar" arity="2">
-  <library>prim_standard</library>
-  <entry>prim_leqChar</entry>
- </primitive>
- <primitive name="prim_ltEqInt" arity="2">
-  <library>prim_standard</library>
-  <entry>prim_leqNumber</entry>
- </primitive>
- <primitive name="prim_ltEqFloat" arity="2">
-  <library>prim_standard</library>
-  <entry>prim_leqNumber</entry>
- </primitive>
-
- <primitive name="prim_Float_plus" arity="2">
-  <library>prim_float</library>
-  <entry>prim_Float_plus</entry>
- </primitive>
- <primitive name="prim_Float_minus" arity="2">
-  <library>prim_float</library>
-  <entry>prim_Float_minus</entry>
- </primitive>
- <primitive name="prim_Float_times" arity="2">
-  <library>prim_float</library>
-  <entry>prim_Float_times</entry>
- </primitive>
- <primitive name="prim_Float_div" arity="2">
-  <library>prim_float</library>
-  <entry>prim_Float_div</entry>
- </primitive>
- <primitive name="prim_i2f" arity="1">
-  <library>prim_float</library>
-  <entry>prim_i2f</entry>
- </primitive>
 </primitives>
