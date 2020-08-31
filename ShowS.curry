@@ -19,7 +19,10 @@ type ShowS = String -> String
 showString :: String -> ShowS
 showString s = (s ++)
 
+showStringIsString :: String -> Prop
 showStringIsString s = showString s [] -=- s
+
+showStringConcat :: String -> String -> Prop
 showStringConcat s1 s2 = (showString s1 . showString s2) [] -=- s1++s2
 
 --- Prepend a single character
@@ -55,6 +58,7 @@ replicateS n funcS
   | n <= 0    = id
   | otherwise = funcS . replicateS (n - 1) funcS
 
+replicateSIsConRep :: Int -> String -> Prop
 replicateSIsConRep n s =
   n>=0 ==> replicateS n (showString s) [] -=- concat (replicate n s)
 
@@ -63,4 +67,5 @@ concatS :: [ShowS] -> ShowS
 concatS []       = id
 concatS xs@(_:_) = foldr1 (\ f g -> f . g) xs
 
+concatSIsConcat :: [String] -> Prop
 concatSIsConcat xs = concatS (map showString xs) [] -=- concat xs

@@ -3,8 +3,6 @@
 % Prolog implementation of builtins of module Unsafe:
 %
 
-:- installDir(PH), appendAtom(PH,'/src/readShowTerm',RST), use_module(RST).
-
 ?- block 'prim_unsafePerformIO'(?,?,-,?).
 'prim_unsafePerformIO'(Action,H,E0,E) :-
         worldToken(World),
@@ -87,18 +85,18 @@ prim_compareAnyTermArgs(I,N,X,Y,R,E0,E) :-
 'Unsafe.prim_showAnyTerm'(Term,String) :-
         copy_term(Term,CTerm),
 	groundTermVars(CTerm,0,_),
-	show_term(CTerm,unqualified,String,[]).
+	readShowTerm:show_term(CTerm,unqualified,String,[]).
 
 'Unsafe.prim_showAnyQTerm'(Term,String) :-
         copy_term(Term,CTerm),
 	groundTermVars(CTerm,0,_),
-	show_term(CTerm,qualified,String,[]).
+	readShowTerm:show_term(CTerm,qualified,String,[]).
 
 ?- block prim_showAnyExpression(?,?,-,?).
 prim_showAnyExpression(Exp,String,E0,E) :-
         removeShares(Exp,UExp), copy_term(UExp,CExp),
 	groundTermVars(CExp,0,_),
-	show_term(CExp,unqualified,String,[]), E0=E.
+	readShowTerm:show_term(CExp,unqualified,String,[]), E0=E.
 
 ?- block prim_showAnyQExpression(?,?,-,?).
 prim_showAnyQExpression(Exp,String,E0,E) :-
@@ -106,7 +104,7 @@ prim_showAnyQExpression(Exp,String,E0,E) :-
 	bindSingleLets(Lets),
 	copy_term(UExp,CExp),
 	groundTermVars(CExp,0,_),
-	show_term(CExp,qualified,String,[]), E0=E.
+	readShowTerm:show_term(CExp,qualified,String,[]), E0=E.
 
 % replace all share structures in a term by let expressions:
 shares2let(_,T,T) :- var(T), !.
@@ -165,7 +163,7 @@ groundTermsVars([A|As],I,I2) :-
 % conversion of string representations of Curry terms into Curry terms:
 'Unsafe.prim_readsAnyQTerm'(String,['Prelude.(,)'(Term,TailString)]) :-
 	map2M(basics:char_int,String,PrologString),
-	readTerm(PrologString,any_qualified,Tail,GTerm),
+	readShowTerm:readTerm(PrologString,any_qualified,Tail,GTerm),
 	ungroundTermVars(GTerm,Term,_),
 	map2M(basics:char_int,TailString,Tail), !.
 'Unsafe.prim_readsAnyQTerm'(_,[]). % parse error
@@ -175,7 +173,7 @@ groundTermsVars([A|As],I,I2) :-
 	(Prefixes=[] -> PrefixDots=any
 	  ; map2M(prim_readshowterm:prefix2prefixdot,Prefixes,PrefixDots)),
 	map2M(basics:char_int,String,PrologString),
-	readTerm(PrologString,any_unqualified(PrefixDots),Tail,GTerm),
+	readShowTerm:readTerm(PrologString,any_unqualified(PrefixDots),Tail,GTerm),
 	ungroundTermVars(GTerm,Term,_),
 	map2M(basics:char_int,TailString,Tail), !.
 'Unsafe.prim_readsAnyUnqualifiedTerm'(_,_,[]). % parse error
@@ -184,7 +182,7 @@ groundTermsVars([A|As],I,I2) :-
 % conversion of string representations into Curry expressions:
 'Unsafe.prim_readsAnyQExpression'(String,['Prelude.(,)'(Term,TailString)]) :-
 	map2M(basics:char_int,String,PrologString),
-	readTerm(PrologString,any_expression,Tail,GTerm),
+	readShowTerm:readTerm(PrologString,any_expression,Tail,GTerm),
 	ungroundTermVars(GTerm,LTerm,_),
 	let2share(LTerm,Term),
 	map2M(basics:char_int,TailString,Tail), !.

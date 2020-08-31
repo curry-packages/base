@@ -7,6 +7,7 @@
 --- @version October 2016
 --- @category general
 ------------------------------------------------------------------------------
+{-# OPTIONS_CYMAKE -Wno-incomplete-patterns #-}
 
 module Integer
   ( (^), pow, ilog, isqrt, factorial, binomial

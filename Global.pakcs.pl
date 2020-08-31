@@ -3,16 +3,6 @@
 % Definitions of builtins of module Global:
 %
 
-%:- module(prim_global,
-%	  [initGlobalValue/4, prim_readGlobal/2, prim_writeGlobal/3]).
-
-%:- (current_module(prologbasics) -> true ; use_module('../prologbasics')).
-%:- (current_module(basics)       -> true ; use_module('../basics')).
-%:- (current_module(prim_readshowterm) -> true ; use_module(prim_readshowterm)).
-:- installDir(PH), appendAtom(PH,'/src/readShowTerm',RST), use_module(RST).
-% for term reading/showing
-%:- (current_module(prim_standard) -> true ; ensure_loaded(user:prim_standard)). % for waitUntilGround
-
 % initialize the predicate containing the global value if called for the
 % first time:
 initGlobalValue(GlobName,'Global.Temporary',Exp,Val) :-
@@ -74,7 +64,7 @@ readGlobalFile(FileName,Val) :-
                       close(Stream)),
                      ValString=[]),
         unlockWithFile(LockFile),
-        readTerm(ValString,qualified,_Rest,Val).
+        readShowTerm:readTerm(ValString,qualified,_Rest,Val).
 
 % write the file with the persistent global value:
 writeGlobalFile(FileName,Val) :-
@@ -85,7 +75,7 @@ writeGlobalFile(FileName,Val) :-
             renameFile(FileName,BakFileName)
 	  ; true),
 	open(FileName,write,Stream),
-	show_term(Val,qualified,ValString,[]),
+	readShowTerm:show_term(Val,qualified,ValString,[]),
 	writeChars(Stream,ValString),
 	put_code(Stream,10),
 	% the additional characters are necessary due to a bug in

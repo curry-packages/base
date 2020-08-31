@@ -3,6 +3,12 @@
 
 CURRYBIN="../bin"
 
+CURRYCHECK=`which curry-check`
+if [ -z "$CURRYCHECK" ] ; then
+  echo "WARNING: test skipped since executable 'curry-check' not found!"
+  exit
+fi
+
 ALLTESTS="ShowS Sort"
 
 VERBOSE=no
@@ -21,12 +27,12 @@ CCOPTS="-m100 -dInt"
 LOGFILE=xxx$$
 
 if [ $VERBOSE = yes ] ; then
-  $CURRYBIN/curry check $CCOPTS $ALLTESTS
+  $CURRYCHECK $CCOPTS $ALLTESTS
   if [ $? -gt 0 ] ; then
     exit 1
   fi
 else
-  $CURRYBIN/curry check $CCOPTS $ALLTESTS > $LOGFILE 2>&1
+  $CURRYCHECK $CCOPTS $ALLTESTS > $LOGFILE 2>&1
   if [ $? -gt 0 ] ; then
     echo "ERROR in curry check:"
     cat $LOGFILE
