@@ -626,6 +626,18 @@ showsPrec4CurryList d cl =
 external_d_C_prim_show :: Show a => a -> Cover -> ConstStore -> C_String
 external_d_C_prim_show a _ _ = toCurry (show a)
 
+external_d_C_prim_showCharLiteral :: C_Char -> Cover -> ConstStore -> C_String
+external_d_C_prim_showCharLiteral a _ _ = toCurry (show a)
+
+external_d_C_prim_showIntLiteral :: C_Int -> Cover -> ConstStore -> C_String
+external_d_C_prim_showIntLiteral a _ _ = toCurry (show a)
+
+external_d_C_prim_showFloatLiteral :: C_Float -> Cover -> ConstStore -> C_String
+external_d_C_prim_showFloatLiteral a _ _ = toCurry (show a)
+
+external_d_C_prim_showStringLiteral :: C_String -> Cover -> ConstStore -> C_String
+external_d_C_prim_showStringLiteral a _ _ = toCurry (show a)
+
 external_d_C_prim_readNatLiteral :: C_String -> Cover -> ConstStore -> OP_List (OP_Tuple2 C_Int C_String)
 external_d_C_prim_readNatLiteral s _ _ = toCurry (reads (fromCurry s) :: [(Integer, String)])
 
@@ -844,24 +856,24 @@ external_d_C_negateFloat (C_Float x) _  _  = C_Float (negateDouble# x)
 external_d_C_negateFloat x           cd cs
   = (external_d_C_negateFloat `d_OP_dollar_hash` x) cd cs
 
-external_d_C_prim_Float_plus :: C_Float -> C_Float -> Cover -> ConstStore -> C_Float
-external_d_C_prim_Float_plus y x _ _ =
+external_d_C_prim_plusFloat :: C_Float -> C_Float -> Cover -> ConstStore -> C_Float
+external_d_C_prim_plusFloat y x _ _ =
   toCurry ((fromCurry x + fromCurry y) :: Double)
 
-external_d_C_prim_Float_minus :: C_Float -> C_Float -> Cover -> ConstStore -> C_Float
-external_d_C_prim_Float_minus y x _ _ =
+external_d_C_prim_minusFloat :: C_Float -> C_Float -> Cover -> ConstStore -> C_Float
+external_d_C_prim_minusFloat y x _ _ =
   toCurry ((fromCurry x - fromCurry y) :: Double)
 
-external_d_C_prim_Float_times :: C_Float -> C_Float -> Cover -> ConstStore -> C_Float
-external_d_C_prim_Float_times y x _ _ =
+external_d_C_prim_timesFloat :: C_Float -> C_Float -> Cover -> ConstStore -> C_Float
+external_d_C_prim_timesFloat y x _ _ =
   toCurry ((fromCurry x * fromCurry y) :: Double)
 
-external_d_C_prim_Float_div :: C_Float -> C_Float -> Cover -> ConstStore -> C_Float
-external_d_C_prim_Float_div y x _ _ =
+external_d_C_prim_divFloat :: C_Float -> C_Float -> Cover -> ConstStore -> C_Float
+external_d_C_prim_divFloat y x _ _ =
   toCurry ((fromCurry x / fromCurry y) :: Double)
 
-external_d_C_prim_i2f :: C_Int -> Cover -> ConstStore -> C_Float
-external_d_C_prim_i2f x _ _ = toCurry (fromInteger (fromCurry x) :: Double)
+external_d_C_prim_intToFloat :: C_Int -> Cover -> ConstStore -> C_Float
+external_d_C_prim_intToFloat x _ _ = toCurry (fromInteger (fromCurry x) :: Double)
 
 -- -----------------------------------------------------------------------------
 -- Primitive operations: IO stuff
