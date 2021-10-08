@@ -668,6 +668,11 @@ replaceMultipleVariablesInArgs([],_,_,[]).
 replaceMultipleVariablesInArgs([X|Args],Below,Vars,[NewArg|LinArgs]) :-
 	var(X), !, getControlVar(X,Below,Vars,NewArg),
 	replaceMultipleVariablesInArgs(Args,Below,Vars,LinArgs).
+replaceMultipleVariablesInArgs([share(M)|Args],Below,Vars,[LinArg|LinArgs]) :-
+        !,
+        get_mutable(V,M),
+        (V='$eval'(Arg) -> true ; Arg = V),
+        replaceMultipleVariablesInArgs([Arg|Args],Below,Vars,[LinArg|LinArgs]).
 replaceMultipleVariablesInArgs([Arg|Args],Below,Vars,[Arg|LinArgs]) :-
 	% avoid repeating replacing already replaced variables
 	Arg = 'Prelude.&>'('Prelude.ifVar'(ShareVar,
