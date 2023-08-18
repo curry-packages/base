@@ -253,7 +253,7 @@ prim_Monad_bindWorld(Action1,FunAction2,W,R,E0,E) :-
 
 
 % Although the IO instance of (*>), having the internal name
-% "_impl#*>#Prelude.Applicative#Prelude.IO"
+% "_impl#*>#Prelude.Applicative#Prelude.IO#"
 % (and, thus, the IO instance of (>>)) is a defined function,
 % we provide a slightly faster primitive implementation.
 % The usage of this implementation is specified in Prelude.pakcs
