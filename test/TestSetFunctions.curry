@@ -6,6 +6,7 @@
 
 import Control.Search.SetFunctions
 import Test.Prop
+import Debug.Trace
 
 coin :: Int
 coin = 0 ? 1
@@ -27,6 +28,7 @@ data FlightNumber = LH469 | NWA92 | LH10 | KL1783
  deriving (Eq,Show)
 
 data City = Portland | Frankfurt | Amsterdam | Hamburg
+  deriving (Eq, Show)
 
 (:.) :: Int -> Int -> (Int,Int)
 x :. y = (x,y)
@@ -38,11 +40,11 @@ flight = (LH10,  Frankfurt,Hamburg,   1:.00)
 flight = (KL1783,Amsterdam,Hamburg,   1:.52)
 
 itinerary :: City -> City -> [FlightNumber]
-itinerary orig dest 
+itinerary orig dest
    | flight =:= (num,orig,dest,len)
    = [num]
    where num, len free
-itinerary orig dest 
+itinerary orig dest
    | flight =:= (num1,orig,x,len1)
    & flight =:= (num2,x,dest,len2)
    = [num1,num2]
@@ -52,15 +54,25 @@ duration :: [FlightNumber] -> Int
 duration = foldr (+) 0 . map flightToMinutes
 
 flightToMinutes :: FlightNumber -> Int
-flightToMinutes fnum | flight =:= (fnum,unknown,unknown,h:.m)
-                     = h*60+m
-  where h,m free
+flightToMinutes fnum | f =:= (fnum,unknown,unknown,h:.m)
+                     = trace "\n\n\n\n\n" $ h*60+m
+  where
+    h,m free
+    f = flight
+
+testU :: Bool -> Bool
+testU x | x =:= True = x
+        | x =:= False = x
+
+testF | failed = True
+      | otherwise = False
+
 
 -- Returns an itinerary with a shortest flight time.
 -- Purely declarative specification: an itinerary is the shortest if there is
 -- no shorter itinerary.
 shortestItin :: City -> City -> [FlightNumber]
-shortestItin s e 
+shortestItin s e
   | isEmpty (set3 shorterItinThan s e (duration it))
   = it
  where it = itinerary s e
@@ -70,6 +82,18 @@ shorterItinThan start end itduration
   | duration its < itduration
   = its
  where its = itinerary start end
+
+shortestItin3 :: City -> City -> [FlightNumber]
+shortestItin3 s e = (\i -> if
+  isEmpty (set3 shorterItinThan s e (duration i))
+  then i else []) $!! it
+ where it = itinerary s e
+
+shortestItin2 :: City -> City -> Bool
+shortestItin2 s e
+  | isEmpty (set3 shorterItinThan s e (duration it))
+  = True
+ where it = itinerary s e
 
 #ifdef __PAKCS__
 -- Test only with PAKCS due to bug in KiCS2 implementation of set functions
@@ -99,7 +123,10 @@ perm (x:xs) = ndinsert x (perm xs)
 queens n | isEmpty ((set1 unsafe) p) = p
  where p = perm [1..n]
 
-unsafe (_++[x]++y++[z]++_) = abs (x-z) =:= length y + 1
+unsafe xs | (a++[x]++y++[z]++b) =:<= xs = abs (x-z) =:= length y + 1
+  where a, x, y, z, b free
+
+unsafe2 (a++[x]++y++[z]++b) = abs (x-z) =:= length y + 1
 
 
 testQueens4 = (queens 4) <~> ([3,1,4,2] ? [2,4,1,3])

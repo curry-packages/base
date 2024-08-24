@@ -2,6 +2,7 @@
 import BasicDefinitions
 import MemoizedCurry
 import Prelude
+import Debug.Trace
 import Control.Monad.State
 
 searchdotSetFunctionsdotset0_Det# :: (Curryable a', HsEquivalent a' ~ a) => a -> Values_Det a
@@ -77,83 +78,107 @@ transListTree (ConsTree x xs) =
 set0 :: Curryable a
      => Curry a -> Curry (Values_ND a)
 set0 f = do
-  lvl <- currentLevel <$> get
-  modify (\s -> s { setComputation = True })
-  Values_ND . return . transListTree <$> captureWithLvl lvl (groundNormalForm f)
+  s <- get
+  let lvl = currentLevel s
+  modify (\s -> s { captureLevel = Just (succ lvl) })
+  r <- Values_ND . return . transListTree <$> captureWithLvl (succ lvl) (groundNormalForm (setLevelC (succ lvl) f))
+  modify (\s -> s { captureLevel = captureLevel s })
+  return r
 
 set1 :: (Curryable a, Curryable b)
      => Curry (a :-> b) -> Curry a -> Curry (Values_ND b)
-set1 f arg = do
-  lvl <- currentLevel <$> get
-  modify (\s -> s { setComputation = True })
-  Values_ND . return . transListTree <$> captureWithLvl lvl (groundNormalForm (f
-    `app` (setLevelC (succ lvl) arg)))
+set1 f arg1 = do
+  s <- get
+  let lvl = currentLevel s
+  modify (\s -> s { captureLevel = Just (succ lvl) })
+  r <- Values_ND . return . transListTree <$> captureWithLvl (succ lvl) (groundNormalForm (setLevelC (succ lvl) f
+    `app` (setLevelC lvl arg1)))
+  modify (\s -> s { captureLevel = captureLevel s })
+  return r
 
 set2 :: (Curryable a, Curryable b, Curryable c)
      => Curry (a :-> b :-> c) -> Curry a -> Curry b -> Curry (Values_ND c)
 set2 f arg1 arg2 = do
-  lvl <- currentLevel <$> get
-  modify (\s -> s { setComputation = True })
-  Values_ND . return . transListTree <$> captureWithLvl lvl (groundNormalForm (f
-    `app` (setLevelC (succ lvl) arg1)
-    `app` (setLevelC (succ lvl) arg2)))
+  s <- get
+  let lvl = currentLevel s
+  modify (\s -> s { captureLevel = Just (succ lvl) })
+  r <- Values_ND . return . transListTree <$> captureWithLvl (succ lvl) (groundNormalForm (setLevelC (succ lvl) f
+    `app` (setLevelC lvl arg1)
+    `app` (setLevelC lvl arg2)))
+  modify (\s -> s { captureLevel = captureLevel s })
+  return r
 
 set3 :: (Curryable a, Curryable b, Curryable c, Curryable d)
      => Curry (a :-> b :-> c :-> d) -> Curry a -> Curry b -> Curry c -> Curry (Values_ND d)
 set3 f arg1 arg2 arg3 = do
-  lvl <- currentLevel <$> get
-  modify (\s -> s { setComputation = True })
-  Values_ND . return . transListTree <$> captureWithLvl lvl (groundNormalForm (f
-    `app` (setLevelC (succ lvl) arg1)
-    `app` (setLevelC (succ lvl) arg2)
-    `app` (setLevelC (succ lvl) arg3)))
+  s <- get
+  let lvl = currentLevel s
+  modify (\s -> s { captureLevel = Just (succ lvl) })
+  r <- Values_ND . return . transListTree <$> captureWithLvl (succ lvl) (groundNormalForm (setLevelC (succ lvl) f
+    `app` (setLevelC lvl arg1)
+    `app` (setLevelC lvl arg2)
+    `app` (setLevelC lvl arg3)))
+  modify (\s -> s { captureLevel = captureLevel s })
+  traceShow ("lol", lvl) $ return r
 
 set4 :: (Curryable a, Curryable b, Curryable c, Curryable d, Curryable e)
      => Curry (a :-> b :-> c :-> d :-> e) -> Curry a -> Curry b -> Curry c -> Curry d -> Curry (Values_ND e)
 set4 f arg1 arg2 arg3 arg4 = do
-  lvl <- currentLevel <$> get
-  modify (\s -> s { setComputation = True })
-  Values_ND . return . transListTree <$> captureWithLvl lvl (groundNormalForm (f
-    `app` (setLevelC (succ lvl) arg1)
-    `app` (setLevelC (succ lvl) arg2)
-    `app` (setLevelC (succ lvl) arg3)
-    `app` (setLevelC (succ lvl) arg4)))
+  s <- get
+  let lvl = currentLevel s
+  modify (\s -> s { captureLevel = Just (succ lvl) })
+  r <- Values_ND . return . transListTree <$> captureWithLvl (succ lvl) (groundNormalForm (setLevelC (succ lvl) f
+    `app` (setLevelC lvl arg1)
+    `app` (setLevelC lvl arg2)
+    `app` (setLevelC lvl arg3)
+    `app` (setLevelC lvl arg4)))
+  modify (\s -> s { captureLevel = captureLevel s })
+  return r
 
 set5 :: (Curryable a, Curryable b, Curryable c, Curryable d, Curryable e, Curryable f)
      => Curry (a :-> b :-> c :-> d :-> e :-> f) -> Curry a -> Curry b -> Curry c -> Curry d -> Curry e -> Curry (Values_ND f)
 set5 f arg1 arg2 arg3 arg4 arg5 = do
-  lvl <- currentLevel <$> get
-  modify (\s -> s { setComputation = True })
-  Values_ND . return . transListTree <$> captureWithLvl lvl (groundNormalForm (f
-    `app` (setLevelC (succ lvl) arg1)
-    `app` (setLevelC (succ lvl) arg2)
-    `app` (setLevelC (succ lvl) arg3)
-    `app` (setLevelC (succ lvl) arg4)
-    `app` (setLevelC (succ lvl) arg5)))
+  s <- get
+  let lvl = currentLevel s
+  modify (\s -> s { captureLevel = Just (succ lvl) })
+  r <- Values_ND . return . transListTree <$> captureWithLvl (succ lvl) (groundNormalForm (setLevelC (succ lvl) f
+    `app` (setLevelC lvl arg1)
+    `app` (setLevelC lvl arg2)
+    `app` (setLevelC lvl arg3)
+    `app` (setLevelC lvl arg4)
+    `app` (setLevelC lvl arg5)))
+  modify (\s -> s { captureLevel = captureLevel s })
+  return r
 
 set6 :: (Curryable a, Curryable b, Curryable c, Curryable d, Curryable e, Curryable f, Curryable g)
      => Curry (a :-> b :-> c :-> d :-> e :-> f :-> g) -> Curry a -> Curry b -> Curry c -> Curry d -> Curry e -> Curry f -> Curry (Values_ND g)
 set6 f arg1 arg2 arg3 arg4 arg5 arg6 = do
-  lvl <- currentLevel <$> get
-  modify (\s -> s { setComputation = True })
-  Values_ND . return . transListTree <$> captureWithLvl lvl (groundNormalForm (f
-    `app` (setLevelC (succ lvl) arg1)
-    `app` (setLevelC (succ lvl) arg2)
-    `app` (setLevelC (succ lvl) arg3)
-    `app` (setLevelC (succ lvl) arg4)
-    `app` (setLevelC (succ lvl) arg5)
-    `app` (setLevelC (succ lvl) arg6)))
+  s <- get
+  let lvl = currentLevel s
+  modify (\s -> s { captureLevel = Just (succ lvl) })
+  r <- Values_ND . return . transListTree <$> captureWithLvl (succ lvl) (groundNormalForm (setLevelC (succ lvl) f
+    `app` (setLevelC lvl arg1)
+    `app` (setLevelC lvl arg2)
+    `app` (setLevelC lvl arg3)
+    `app` (setLevelC lvl arg4)
+    `app` (setLevelC lvl arg5)
+    `app` (setLevelC lvl arg6)))
+  modify (\s -> s { captureLevel = captureLevel s })
+  return r
 
 set7 :: (Curryable a, Curryable b, Curryable c, Curryable d, Curryable e, Curryable f, Curryable g, Curryable h)
      => Curry (a :-> b :-> c :-> d :-> e :-> f :-> g :-> h) -> Curry a -> Curry b -> Curry c -> Curry d -> Curry e -> Curry f -> Curry g -> Curry (Values_ND h)
 set7 f arg1 arg2 arg3 arg4 arg5 arg6 arg7 = do
-  lvl <- currentLevel <$> get
-  modify (\s -> s { setComputation = True })
-  Values_ND . return . transListTree <$> captureWithLvl lvl (groundNormalForm (f
-    `app` (setLevelC (succ lvl) arg1)
-    `app` (setLevelC (succ lvl) arg2)
-    `app` (setLevelC (succ lvl) arg3)
-    `app` (setLevelC (succ lvl) arg4)
-    `app` (setLevelC (succ lvl) arg5)
-    `app` (setLevelC (succ lvl) arg6)
-    `app` (setLevelC (succ lvl) arg7)))
+  s <- get
+  let lvl = currentLevel s
+  modify (\s -> s { captureLevel = Just (succ lvl) })
+  r <- Values_ND . return . transListTree <$> captureWithLvl (succ lvl) (groundNormalForm (setLevelC (succ lvl) f
+    `app` (setLevelC lvl arg1)
+    `app` (setLevelC lvl arg2)
+    `app` (setLevelC lvl arg3)
+    `app` (setLevelC lvl arg4)
+    `app` (setLevelC lvl arg5)
+    `app` (setLevelC lvl arg6)
+    `app` (setLevelC lvl arg7)))
+  modify (\s -> s { captureLevel = captureLevel s })
+  return r
