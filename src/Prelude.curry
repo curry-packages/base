@@ -2229,12 +2229,17 @@ doSolve b | b = return ()
 --- `(e1 =:= e2)` is satisfiable if both sides `e1` and `e2` can be
 --- reduced to a unifiable data term (i.e., a term without defined
 --- function symbols).
-(=:=) :: Data a => a -> a -> Bool
 #ifdef __PAKCS__
+(=:=) :: Data a => a -> a -> Bool
 x =:= y = constrEq x y
 #elif defined(__CURRY2GO__)
+(=:=) :: Data a => a -> a -> Bool
 x =:= y = constrEq x y
+#elif  __KMCC__ > 0
+(=:=) :: Data a => a -> a -> Bool
+(=:=) external
 #else
+(=:=) :: a -> a -> Bool
 (=:=) external
 #endif
 
@@ -2259,12 +2264,17 @@ constrEq external
 --- The `Data` context is required since the resulting pattern might be
 --- non-linear so that it abbreviates some further equational constraints,
 --- see [Section 7](https://doi.org/10.1007/978-3-030-46714-2_15).
-(=:<=) :: Data a => a -> a -> Bool
 #ifdef __PAKCS__
+(=:<=) :: Data a => a -> a -> Bool
 x =:<= y = nonstrictEq x y
 #elif defined(__CURRY2GO__)
+(=:<=) :: Data a => a -> a -> Bool
 x =:<= y = nonstrictEq x y
+#elif  __KMCC__ > 0
+(=:<=) :: Data a => a -> a -> Bool
+(=:<=) external
 #else
+(=:<=) :: a -> a -> Bool
 (=:<=) external
 #endif
 
