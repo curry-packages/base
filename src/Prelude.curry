@@ -182,21 +182,34 @@ instance (Data a, Data b, Data c, Data d, Data e, Data f, Data g) =>
     f1 === f2 && g1 === g2
   aValue = (aValue, aValue, aValue, aValue, aValue, aValue, aValue)
 
+-- Value generator for positive natural numbers.
+aValuePosNat :: Int
+aValuePosNat = 1 ? (2 * aValuePosNat) ? (2 * aValuePosNat + 1)
+
 -- Value generator for integers.
 aValueInt :: Int
-aValueInt = genPos 1 ? 0  ?  0 - genPos 1
- where
-  genPos n = n  ?  genPos (2 * n)  ?  genPos (2 * n + 1)
+aValueInt = aValuePosNat ? 0 ?  (0 - aValuePosNat)
 
--- Value generator for chars.
+-- Value generator for floats. It is simply implemented by guessing the
+-- two parts before and after the point. Could be replaced by other
+-- enumeration methods.
+aValueFloat :: Float
+aValueFloat = aValuePosFloat ? 0 ? (0 - aValuePosFloat)
+
+-- Value generator for positive floats. It is simply implemented by guessing
+-- the two parts before and after the point. Could be replaced by other
+-- enumeration methods.
+aValuePosFloat :: Float
+aValuePosFloat = fromInt aValuePosNat + nat2float 0.1 aValuePosNat
+ where
+  -- Transform a natural to float<1, e.g., nat2float 0.1 135 = 0.531
+  nat2float m i =
+    if i == 0 then 0
+              else nat2float (m / 10) (i `div` 10) + m * fromInt (i `mod` 10)
+
+-- Value generator for characters.
 aValueChar :: Char
 aValueChar = foldr1 (?) [minBound .. maxBound]
-
--- Value generator for floats.
--- Since there is no good way to enumerate floats, a free variable
--- is returned.
-aValueFloat :: Float
-aValueFloat = x where x free
 
 ------------------------------------------------------------------------------
 

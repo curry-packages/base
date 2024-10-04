@@ -8,9 +8,7 @@ Curry distributions like
 [Curry2Go](https://www-ps.informatik.uni-kiel.de/curry2go/).
 
 The libraries in this package can be used in these Curry systems
-without the use of the Curry Package Manager.
+without the Curry Package Manager.
 Since the structure of this base repository is similar to
-other Curry packages, the dependency on this package
-can be specified in other Curry packages.
-This is reasonable to specify the dependency
-on base libraries in a Curry package.
+other Curry packages, the dependency on a specific version
+of the base libraries can be specified in other Curry packages.
