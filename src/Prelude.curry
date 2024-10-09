@@ -203,6 +203,7 @@ aValuePosFloat :: Float
 aValuePosFloat = fromInt aValuePosNat + nat2float 0.1 aValuePosNat
  where
   -- Transform a natural to float<1, e.g., nat2float 0.1 135 = 0.531
+  nat2float :: Float -> Int -> Float
   nat2float m i =
     if i == 0 then 0
               else nat2float (m / 10) (i `div` 10) + m * fromInt (i `mod` 10)
