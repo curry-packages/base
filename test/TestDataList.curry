@@ -3,7 +3,7 @@
 ---
 --- To run all tests automatically by CurryCheck, use the command:
 ---
----     > curry-check TestList
+---     > curry-check TestDataList
 ------------------------------------------------------------------------------
 
 import Data.List

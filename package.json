@@ -17,8 +17,8 @@
     },
     "testsuite": {
         "src-dir": "test",
-        "modules":  [ "TestPrelude", "TestDataChar", "TestList",
-                      "TestIORefs", "TestFunction",
+        "modules":  [ "TestPrelude", "TestDataChar", "TestDataFunction",
+                      "TestDataList", "TestIORefs",
                       "TestEnvironment", "TestTextShow",
                       "TestAllValues", "TestSetFunctions" ]
     },

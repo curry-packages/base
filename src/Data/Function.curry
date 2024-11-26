@@ -19,6 +19,6 @@ fix f = let x = f x in x
 ---
 --- A typical usage of this operation is:
 ---
----     sortBy (compare `on` fst)
+---     sortBy ((<=) `on` fst)
 on :: (b -> b -> c) -> (a -> b) -> a -> a -> c
 on op f x y = f x `op` f y
