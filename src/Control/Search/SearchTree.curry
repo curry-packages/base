@@ -5,7 +5,7 @@
 --- [the JFLP'04 paper](http://www.informatik.uni-kiel.de/~mh/papers/JFLP04_findall.html).
 ---
 --- @author  Michael Hanus, Bjoern Peemoeller, Fabian Reck
---- @version December 2018
+--- @version November 2024
 ------------------------------------------------------------------------------
 {-# LANGUAGE CPP #-}
 
@@ -16,9 +16,9 @@ module Control.Search.SearchTree
   , dfsStrategy, bfsStrategy, idsStrategy, idsStrategyWith, diagStrategy
   , allValuesWith
   , allValuesDFS, allValuesBFS, allValuesIDS, allValuesIDSwith, allValuesDiag
-  , ValueSequence, vsToList
   , getAllValuesWith, printAllValuesWith, printValuesWith
   , someValue, someValueWith
+  , ValueSequence, emptyVS, addVS, failVS, (|++|), vsToList
   ) where
 
 import System.IO       ( hFlush, stdout )
