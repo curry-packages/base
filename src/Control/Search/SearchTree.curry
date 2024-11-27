@@ -55,8 +55,8 @@ getSearchTree x = return (someSearchTree x)
 someSearchTree :: a -> SearchTree a
 #ifdef __PAKCS__
 someSearchTree = list2st . allValues
- where list2st []  = Fail 0
-       list2st [x] = Value x
+ where list2st []       = Fail 0
+       list2st [x]      = Value x
        list2st (x:y:ys) = Or (Value x) (list2st (y:ys))
 #else
 someSearchTree external
