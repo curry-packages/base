@@ -2249,9 +2249,6 @@ x =:= y = constrEq x y
 #elif defined(__CURRY2GO__)
 (=:=) :: Data a => a -> a -> Bool
 x =:= y = constrEq x y
-#elif  __KMCC__ > 0
-(=:=) :: Data a => a -> a -> Bool
-(=:=) external
 #else
 (=:=) :: a -> a -> Bool
 (=:=) external
@@ -2284,9 +2281,6 @@ x =:<= y = nonstrictEq x y
 #elif defined(__CURRY2GO__)
 (=:<=) :: Data a => a -> a -> Bool
 x =:<= y = nonstrictEq x y
-#elif  __KMCC__ > 0
-(=:<=) :: Data a => a -> a -> Bool
-(=:<=) external
 #else
 (=:<=) :: a -> a -> Bool
 (=:<=) external
