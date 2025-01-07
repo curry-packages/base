@@ -93,11 +93,13 @@ infixr 2 ||
 infixl 1 >>, >>=
 infixr 0 ?, $, $!, $!!, $#, $##, `seq`, &, &>
 
--- externally defined types for numbers and characters
+--- The externally defined type of characters.
 external data Char
 
+--- The externally defined type of integers.
 external data Int
 
+--- The externally defined type of float point numbers.
 external data Float
 
 --- The type of Boolean values.
