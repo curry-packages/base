@@ -82,6 +82,15 @@ replicateM_ cnt0 f =
 unless :: (Applicative f) => Bool -> f () -> f ()
 unless p s =  if p then pure () else s
 
+--- Promotes a ternary function to a monad.
+--- The function arguments are scanned from left to right.
+---
+--- Examples:
+---
+---     > liftM3 (\x y z -> x+y+z) [1,2] [3,4] [5,6]
+---     [9,10,10,11,10,11,11,12]
+---     > liftM3 (,,) [1,2] [3,4] [5,6]
+---    [(1,3,5),(1,3,6),(1,4,5),(1,4,6),(2,3,5),(2,3,6),(2,4,5),(2,4,6)]
 liftM3 :: Monad m => (a -> b -> c -> d) -> m a -> m b -> m c -> m d
 liftM3 f ma mb mc = do
   a <- ma 

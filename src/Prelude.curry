@@ -455,7 +455,7 @@ prim_ltEqFloat :: Float -> Float -> Bool
 prim_ltEqFloat external
 #endif
 
---- The type synonym `ShowS` represent strings as difference lists.
+--- The type synonym `ShowS` represents strings as difference lists.
 --- Composing functions of this type allows concatenation of lists
 --- in constant time.
 type ShowS = String -> String
@@ -1626,8 +1626,8 @@ ap m1 m2 = do
   x2 <- m2
   return (x1 x2)
 
---- Promotes a function to a monad. The function arguments are scanned
---- from left to right.
+--- Promotes a binary function to a monad.
+--- The function arguments are scanned from left to right.
 --- For instance, `liftM2 (+) [1,2] [3,4]` evaluates to `[4,5,5,6]`, and
 --- `liftM2 (,) [1,2] [3,4]` evaluates to `[(1,3),(1,4),(2,3),(2,4)]`.
 liftM2 :: Monad m => (a1 -> a2 -> r) -> m a1 -> m a2 -> m r
