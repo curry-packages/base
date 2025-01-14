@@ -121,6 +121,21 @@ data Ordering = LT | EQ | GT
 
 --++ data (->) a b
 
+--- The class `Data` defines a strict equality operator `===`
+--- and a non-deterministic operation `aValue` which yields
+--- all values of the given type.
+--- To ensure that the operator `===` always corresponds to the
+--- syntactic equality of values and `aValue ` enumerates all values,
+--- instances of `Data` are automatically derived and cannot be
+--- defined in a valid Curry program.
+--- For data types contain functional values, `Data` instances
+--- are not derived.
+--- Free variables have always a data context to ensure that possible
+--- values for the type of the free variable can be enumerated.
+---
+--- Note that the class `Data` is different from the class `Eq`,
+--- since the latter defines only an equivalence relation rather
+--- than syntactic equality.
 class Data a where
   (===)  :: a -> a -> Bool
   aValue :: a
@@ -216,6 +231,10 @@ aValueChar = foldr1 (?) [minBound .. maxBound]
 
 ------------------------------------------------------------------------------
 
+--- The class `Eq` defines an equality (`==`) and an inequality (`/=`) method.
+--- Instances of this class should define an equivalence relationship
+--- on values. For basic data types, the instances are defined as
+--- syntactic equality of values.
 class Eq a where
   (==), (/=) :: a -> a -> Bool
 
@@ -320,6 +339,9 @@ eqString [] (_:_) = False
 eqString (_:_) [] = False
 eqString (x:xs) (y:ys) = eqChar x y && eqString xs ys
 
+--- The class `Ord` defines operations to compare values of the given type
+--- with respect to a total ordering.
+--- A minimal instance definition for some type must define `<=` or `compare`.
 class Eq a => Ord a where
   compare :: a -> a -> Ordering
   (<), (>), (<=), (>=) :: a -> a -> Bool
@@ -438,6 +460,8 @@ prim_ltEqFloat external
 --- in constant time.
 type ShowS = String -> String
 
+--- The class `Show` contains methods to transform values into
+--- a string representation.
 class Show a where
   show :: a -> String
   showsPrec :: Int -> a -> ShowS
@@ -563,6 +587,8 @@ prim_showFloatLiteral external
 --- the input string is not valid.
 type ReadS a = String -> [(a, String)]
 
+--- The class `Read` contains method to parse strings to return values
+--- corresponding to the textual representation as produced by `show`.
 class Read a where
   readsPrec :: Int -> ReadS a
   readList :: ReadS [a]
@@ -793,6 +819,7 @@ readFloatLiteral s = prim_readFloatLiteral $## s
 prim_readFloatLiteral :: String -> [(Float, String)]
 prim_readFloatLiteral external
 
+--- Instances of the class `Bounded` are types with minmal and maximal values.
 class Bounded a where
   minBound, maxBound :: a
 
@@ -829,6 +856,10 @@ instance Bounded Ordering where
   maxBound = LT
   minBound = GT
 
+--- The class `Enum` provides methods to enumerate values of the given
+--- type in a sequential order.
+--- If a type is an instance of `Enum`, one can use the standard
+--- notation for arithmetic sequences to enumerate list of values.
 class Enum a where
   succ :: a -> a
   pred :: a -> a
@@ -902,7 +933,9 @@ instance Enum Ordering where
   enumFrom x = enumFromTo x GT
   enumFromThen x y = enumFromThenTo x y (if x <= y then GT else LT)
 
-
+--- The class of basic numeric values.
+--- For type wich are instances of `Num`, one can write values
+--- as integers which are converted by an implicit `fromInt` application.
 class Num a where
   (+), (-), (*) :: a -> a -> a
   negate :: a -> a
@@ -1033,6 +1066,7 @@ prim_intToFloat :: Int -> Float
 prim_intToFloat external
 #endif
 
+--- The class `Fractional` defines numbers with a division operation.
 class Num a => Fractional a where
   (/) :: a -> a -> a
   recip :: a -> a
@@ -1056,6 +1090,7 @@ prim_divFloat :: Float -> Float -> Float
 prim_divFloat external
 #endif
 
+--- The class of real numbers which can be mapped to floats.
 class (Num a, Ord a) => Real a where
   toFloat :: a -> Float
 
@@ -1065,7 +1100,7 @@ instance Real Int where
 instance Real Float where
   toFloat x = x
 
-
+--- The class of `Integral` numbers supports integer division operators.
 class (Real a, Enum a) => Integral a where
   div, mod :: a -> a -> a
   quot, rem :: a -> a -> a
@@ -1159,6 +1194,8 @@ prim_remInt :: Int -> Int -> Int
 prim_remInt external
 #endif
 
+--- Instances of the class `RealFrac` supports extracting components
+--- of `Fractional` values.
 class (Real a, Fractional a) => RealFrac a where
   properFraction :: Integral b => a -> (b, a)
   truncate :: Integral b => a -> b
@@ -1211,6 +1248,8 @@ prim_roundFloat :: Float -> Int
 prim_roundFloat external
 #endif
 
+--- The class `Floating` defines `Fractional`s with
+--- trigonometric and hyperbolic and related functions.
 class Fractional a => Floating a where
   pi :: a
   exp, log, sqrt :: a -> a
@@ -1423,6 +1462,8 @@ x0 ^ y0 | y0 < 0    = error "Negative exponent"
                   | y == 1 = x * z
                   | otherwise = g (x * x) (y `quot` 2) (x * z)
 
+--- The class `Monoid` defines types with an associative
+--- binary operation `mappend` having an identity `mempty`.
 class Monoid a where
   mempty  :: a
   mappend :: a -> a -> a
@@ -1471,7 +1512,11 @@ instance Monoid Ordering where
   EQ `mappend` y = y
   GT `mappend` _ = GT
 
-
+--- The class `Functor` defines a general mapping of values contained
+--- in structures.
+--- A type constructor `f` is a Functor if it provides a function `fmap`
+--- which applies a function of type `(a -> b)` to all values contained
+--- in a structure of type `f a` yielding a structure of type `f b`.
 class Functor f where
   fmap :: (a -> b) -> f a -> f b
   (<$) :: a -> f b -> f a
@@ -1484,10 +1529,16 @@ instance Functor [] where
 instance Functor ((->) r) where
   fmap = (.)
 
+--- Apply a function of type `(a -> b)`, given as the left argument,
+--- to a value of type `f a`, where `f` is a functor,
+--- to get a value of type `f b`.
+--- Basically, this is an infix operator version of `fmap`.
 (<$>) :: Functor f => (a -> b) -> f a -> f b
 (<$>) = fmap
 
-
+--- The class `Applicative` defines a functor structure
+--- with application operators to apply functions and argument
+--- contained in structure and combining their results back into a structure.
 class Functor f => Applicative f where
   pure :: a -> f a
   (<*>) :: f (a -> b) -> f a -> f b
@@ -1544,7 +1595,9 @@ instance Alternative [] where
     empty = []
     (<|>) = (++)
 
-
+--- The class `Monad` defines operators for the sequential composition
+--- of computations.
+--- For instances of `Monad`, the standard `do` notation can be used.
 class Applicative m => Monad m where
   (>>=) :: m a -> (a -> m b) -> m b
   (>>) :: m a -> m b -> m b
@@ -1560,6 +1613,7 @@ instance Monad [] where
 instance Monad ((->) r) where
   f >>= k = \ r -> k (f r) r
 
+--- The class `MonadFail` adds a `fail` operation to a monadic structure.
 class Monad m => MonadFail m where
   fail :: String -> m a
 
