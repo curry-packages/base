@@ -57,12 +57,7 @@ module Prelude
   , IOError (..), userError, ioError, catch
 
   -- * Constraint Programming
-  , Success, success, solve, doSolve, (=:=), (=:<=)
-#ifdef __PAKCS__
-  , constrEq, (=:<<=)
-#elif defined(__CURRY2GO__)
-  , constrEq
-#endif
+  , Success, success, solve, doSolve, (=:=), (=:<=), constrEq, (=:<<=)
   , (&), (&>)
 
   -- * Non-determinism
@@ -81,10 +76,7 @@ infixr 5 ++
 --++ The (:) operator is built-in syntax with the following fixity:
 --++ infixr 5 :
 infix  4 ==, /=, <, >, <=, >=
-infix  4 =:=, =:<=, ===, /==
-#ifdef __PAKCS__
-infix  4 =:<<=
-#endif
+infix  4 ===, /==, =:=, =:<=, =:<<=
 infix  4 `elem`, `notElem`
 infixl 4 <$, <$>, <*>, <*, *>
 infixl 3 <|>
@@ -2313,12 +2305,13 @@ x =:= y = constrEq x y
 --- Internal operation to implement equational constraints.
 --- It is used by the strict equality optimizer but should not be used
 --- in regular programs.
-#ifdef __PAKCS__
 constrEq :: a -> a -> Bool
+#ifdef __PAKCS__
 constrEq external
 #elif defined(__CURRY2GO__)
-constrEq :: a -> a -> Bool
 constrEq external
+#else
+constrEq x y = x =:= y
 #endif
 
 --- Non-strict equational constraint.
@@ -2350,19 +2343,23 @@ nonstrictEq :: a -> a -> Bool
 nonstrictEq external
 #endif
 
-#ifdef __PAKCS__
 --- Non-strict equational constraint for linear functional patterns.
 --- Thus, it must be ensured that the first argument is always
---- (after evalutation by narrowing) a linear pattern. Experimental.
+--- (after evalutation by narrowing) a linear pattern.
+--- Experimental and only supported in PAKCS.
 (=:<<=) :: Data a => a -> a -> Bool
+#ifdef __PAKCS__
 x =:<<= y = unifEqLinear x y
 
+-- Internal implementation of `=:<<=`.
 unifEqLinear :: a -> a -> Bool
 unifEqLinear external
 
---- internal function to implement =:<=
+--- Internal operation used by PAKCS to implement `=:<=`.
 ifVar :: _ -> a -> a -> a
 ifVar external
+#else
+_ =:<<= _ = error "Prelude.=:<<= not supported!"
 #endif
 
 --- Concurrent conjunction.
