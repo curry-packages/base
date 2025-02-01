@@ -1644,7 +1644,7 @@ sequence_ = foldr (>>) (return ())
 mapM :: Monad m => (a -> m b) -> [a] -> m [b]
 mapM f = sequence . map f
 
---- Maps an monadic action function on a list of elements.
+--- Maps a monadic action function on a list of elements.
 --- The results of all monadic actions are ignored.
 mapM_ :: Monad m => (a -> m _) -> [a] -> m ()
 mapM_ f = sequence_ . map f
