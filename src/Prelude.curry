@@ -28,7 +28,7 @@ module Prelude
   -- Type Constructor Classes
   , Functor (..), Applicative (..), Alternative (..)
   , Monad (..), MonadFail(..)
-  , (=<<), liftM2, sequence, sequence_, mapM, mapM_
+  , (=<<), ap, liftM2, sequence, sequence_, mapM, mapM_
 
   -- * Operations on Characters
   , isUpper, isLower, isAlpha, isDigit, isAlphaNum
