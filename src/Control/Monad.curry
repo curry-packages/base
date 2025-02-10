@@ -3,6 +3,7 @@ module Control.Monad
     , filterM, (>=>), (<=<), forever, mapAndUnzipM, zipWithM
     , zipWithM_, foldM, foldM_, replicateM, replicateM_
     , when, unless, liftM3, join, void
+    , forM, forM_
     ) where
 
 import Control.Applicative
@@ -105,3 +106,11 @@ join = (>>= id)
 --- Ignores the result of the evaluation.
 void :: Functor f => f a -> f ()
 void = fmap (const ())
+
+--- mapM with its arguments flipped.
+forM :: Monad m => [a] -> (a -> m b) -> m [b]
+forM = flip mapM
+
+--- mapM_ with its arguments flipped.
+forM_ :: Monad m => [a] -> (a -> m _) -> m ()
+forM_ = flip mapM_
