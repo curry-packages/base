@@ -28,7 +28,7 @@ module Prelude
   -- Type Constructor Classes
   , Functor (..), Applicative (..), Alternative (..)
   , Monad (..), MonadFail(..)
-  , liftM2, sequence, sequence_, mapM, mapM_
+  , (=<<), ap, liftM2, sequence, sequence_, mapM, mapM_
 
   -- * Operations on Characters
   , isUpper, isLower, isAlpha, isDigit, isAlphaNum
@@ -83,6 +83,7 @@ infixl 3 <|>
 infixr 3 &&
 infixr 2 ||
 infixl 1 >>, >>=
+infixr 1 =<<
 infixr 0 ?, $, $!, $!!, $#, $##, `seq`, &, &>
 
 --- The externally defined type of characters.
@@ -1611,6 +1612,9 @@ class Monad m => MonadFail m where
 
 instance MonadFail [] where
   fail _ = []
+
+(=<<) :: Monad m => (a -> m b) -> m a -> m b
+f =<< x = x >>= f
 
 ap :: Monad m => m (a -> b) -> m a -> m b
 ap m1 m2 = do
