@@ -1613,9 +1613,21 @@ class Monad m => MonadFail m where
 instance MonadFail [] where
   fail _ = []
 
+--- Same as '>>=', but with the arguments interchanged.
 (=<<) :: Monad m => (a -> m b) -> m a -> m b
 f =<< x = x >>= f
 
+--- Promotes function application to a monad.
+--- For instance,
+---
+---     > pure not `ap` Just True
+---     Just False
+---
+--- This is useful to promote application of functions with larger arities
+--- to a monad, as 'liftM2' for arity `2`. For instance,
+---
+---     > pure (\x y z -> x + y * z) `ap` Just 7 `ap` Just 5 `ap` Just 7
+---     Just 42
 ap :: Monad m => m (a -> b) -> m a -> m b
 ap m1 m2 = do
   x1 <- m1

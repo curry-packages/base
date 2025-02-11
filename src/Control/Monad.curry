@@ -107,10 +107,13 @@ join = (>>= id)
 void :: Functor f => f a -> f ()
 void = fmap (const ())
 
---- mapM with its arguments flipped.
+--- `forM` is `mapM` with its arguments flipped.
 forM :: Monad m => [a] -> (a -> m b) -> m [b]
 forM = flip mapM
 
---- mapM_ with its arguments flipped.
+--- `forM_` is `mapM_` with its arguments flipped.
+--- It is useful for writing imperative-style loops:
+---
+---     main = forM_ [1, 2, 3] $ \i -> print i
 forM_ :: Monad m => [a] -> (a -> m _) -> m ()
 forM_ = flip mapM_
