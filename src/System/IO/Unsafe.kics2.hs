@@ -9,9 +9,9 @@ external_d_C_unsafePerformIO io cd cs = unsafePerformIO (toIO errSupply cd cs io
 external_nd_C_unsafePerformIO :: Curry_Prelude.C_IO a -> IDSupply -> Cover -> ConstStore -> a
 external_nd_C_unsafePerformIO io s cd cs = unsafePerformIO (toIO s cd cs io)
 
-external_d_C_unsafeInterleaveIO :: Curry_Prelude.C_IO a -> Cover -> ConstStore -> a
+external_d_C_unsafeInterleaveIO :: Curry_Prelude.C_IO a -> Cover -> ConstStore -> Curry_Prelude.C_IO a
 external_d_C_unsafeInterleaveIO io cd cs = fromIO (unsafeInterleaveIO (toIO errSupply cd cs io))
   where errSupply = internalError "Unsafe.unsafeInterleaveIO: ID supply used"
 
-external_nd_C_unsafeInterleaveIO :: Curry_Prelude.C_IO a -> IDSupply -> Cover -> ConstStore -> a
+external_nd_C_unsafeInterleaveIO :: Curry_Prelude.C_IO a -> IDSupply -> Cover -> ConstStore -> Curry_Prelude.C_IO a
 external_nd_C_unsafeInterleaveIO io s cd cs = fromIO (unsafeInterleaveIO (toIO s cd cs io))
