@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --- This library defines a representation of a search space as
 --- a tree and various search strategies on this tree.
---- This module implements **strong encapsulation** as discussed in
---- [the JFLP'04 paper](http://www.informatik.uni-kiel.de/~mh/papers/JFLP04_findall.html).
+--- This module implements **strong encapsulation** as discussed in the
+--- [JFLP'04 paper](http://danae.uni-muenster.de/lehre/kuchen/JFLP/articles/2004/S04-01/A2004-06/JFLP-A2004-06.pdf)
 ---
 --- @author  Michael Hanus, Bjoern Peemoeller, Fabian Reck
 --- @version November 2024
