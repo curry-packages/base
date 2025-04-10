@@ -65,6 +65,7 @@ instance Monad Product where
 
 --- Maybe monoid returning the leftmost Just value.
 newtype First a = First { getFirst :: Maybe a }
+  deriving (Eq, Ord, Show, Read)
 
 instance Functor First where
   fmap f (First x) = First (f <$> x)
@@ -83,6 +84,7 @@ instance Monoid (First a) where
 
 --- Maybe monoid returning the rightmost Just value.
 newtype Last a = Last { getLast :: Maybe a }
+  deriving (Eq, Ord, Show, Read)
 
 instance Monoid (Last a) where
   mempty = Last Nothing
