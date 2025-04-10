@@ -6,7 +6,7 @@
 --- ----------------------------------------------------------------------------
 
 module Data.Monoid
-  ( All (..), Any (..), Sum (..), Product (..)
+  ( All (..), Any (..), Sum (..), Product (..), First (..), Last (..)
   ) where
 
 --- Boolean monoid under (&&)
@@ -62,3 +62,17 @@ instance Applicative Product where
 instance Monad Product where
   return = Product
   Product x >>= f = f x
+
+--- Maybe monoid returning the leftmost Just value.
+newtype First a = First { getFirst :: Maybe a }
+
+instance Monoid (First a) where
+  mempty = First Nothing
+  mappend (First x) (First y) = First (x <|> y)
+
+--- Maybe monoid returning the rightmost Just value.
+newtype Last a = Last { getLast :: Maybe a }
+
+instance Monoid (Last a) where
+  mempty = Last Nothing
+  mappend (Last x) (Last y) = Last (y <|> x)
