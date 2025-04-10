@@ -66,6 +66,17 @@ instance Monad Product where
 --- Maybe monoid returning the leftmost Just value.
 newtype First a = First { getFirst :: Maybe a }
 
+instance Functor First where
+  fmap f (First x) = First (f <$> x)
+
+instance Applicative First where
+  pure = First . pure
+  First f <*> First x = First (f <*> x)
+
+instance Monad First where
+  return = pure
+  First x >>= f = First (x >>= getFirst . f)
+
 instance Monoid (First a) where
   mempty = First Nothing
   mappend (First x) (First y) = First (x <|> y)
@@ -76,3 +87,14 @@ newtype Last a = Last { getLast :: Maybe a }
 instance Monoid (Last a) where
   mempty = Last Nothing
   mappend (Last x) (Last y) = Last (y <|> x)
+
+instance Functor Last where
+  fmap f (Last x) = Last (f <$> x)
+
+instance Applicative Last where
+  pure = Last . pure
+  Last f <*> Last x = Last (f <*> x)
+
+instance Monad Last where
+  return = pure
+  Last x >>= f = Last (x >>= getLast . f)
