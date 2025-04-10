@@ -33,6 +33,17 @@ instance Num a => Monoid (Sum a) where
   mempty = Sum 0
   mappend (Sum x) (Sum y) = Sum (x + y)
 
+instance Functor Sum where
+  fmap f (Sum x) = Sum (f x)
+
+instance Applicative Sum where
+  pure = Sum
+  Sum f <*> Sum x = Sum (f x)
+
+instance Monad Sum where
+  return = Sum
+  Sum x >>= f = f x
+
 --- Monoid under multiplication.
 newtype Product a = Product { getProduct :: a }
   deriving (Eq, Ord, Show, Read)
@@ -40,3 +51,14 @@ newtype Product a = Product { getProduct :: a }
 instance Num a => Monoid (Product a) where
   mempty = Product 1
   mappend (Product x) (Product y) = Product (x * y)
+
+instance Functor Product where
+  fmap f (Product x) = Product (f x)
+
+instance Applicative Product where
+  pure = Product
+  Product f <*> Product x = Product (f x)
+
+instance Monad Product where
+  return = Product
+  Product x >>= f = f x
