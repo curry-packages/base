@@ -1,6 +1,6 @@
 {
     "name": "base",
-    "version": "3.3.0",
+    "version": "3.4.0",
     "author": "Michael Hanus <mh@informatik.uni-kiel.de>",
     "synopsis": "Base libraries for Curry systems",
     "description": "This package contains the base libraries which are directly distributed with Curry systems like PAKCS, KiCS2, or Curry2Go.",
@@ -9,7 +9,7 @@
         "kics2"   : ">= 3.3.0, < 4.0.0",
         "pakcs"   : ">= 3.0.0, < 4.0.0",
         "curry2go": ">= 1.0.0",
-        "kmcc"    : ">= 0.1.0"
+        "kmcc"    : ">= 0.4.0"
     },
     "license": "BSD-3-Clause",
     "licenseFile": "LICENSE",
