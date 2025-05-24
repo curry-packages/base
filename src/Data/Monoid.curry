@@ -2,7 +2,6 @@
 --- Library with some useful `Monoid` instances.
 ---
 --- @version April 2025
---- @category general
 --- ----------------------------------------------------------------------------
 
 module Data.Monoid
