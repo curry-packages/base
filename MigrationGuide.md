@@ -9,7 +9,7 @@ This migration guide aims to provide a comprehensive outline of the
 changes to make the transition of existing packages more seamless.
 In order to find the modules and packages containing a given
 operation, one should try the
-[Currygle](https://www-ps.informatik.uni-kiel.de/kics2/currygle/)
+[Currygle](https://cpm.curry-lang.org/currygle/)
 search tool.
 
 ## Standard Library
