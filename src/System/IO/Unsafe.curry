@@ -9,7 +9,7 @@
 {-# LANGUAGE CPP #-}
 
 module System.IO.Unsafe
-  ( unsafePerformIO, trace
+  ( unsafePerformIO, unsafeInterleaveIO, trace
   , spawnConstraint, isVar, identicalVar, isGround, compareAnyTerm
   , showAnyTerm, showAnyExpression
   , readsAnyUnqualifiedTerm, readAnyUnqualifiedTerm
@@ -21,6 +21,15 @@ import System.IO (hPutStrLn, stderr)
 --- Performs and hides an I/O action in a computation (use with care!).
 unsafePerformIO :: IO a -> a
 unsafePerformIO external
+
+--- Defers an I/O action to be executed lazily. In other words, the action
+--- will first be performed when the value is demanded.
+unsafeInterleaveIO :: IO a -> IO a
+#ifdef __KICS2__
+unsafeInterleaveIO external
+#else
+unsafeInterleaveIO x = return (unsafePerformIO x) -- Fallback implementation, relies on not being inlined
+#endif
 
 --- Prints the first argument as a side effect and behaves as identity on the
 --- second argument.
