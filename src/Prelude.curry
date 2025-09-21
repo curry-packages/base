@@ -21,11 +21,11 @@ module Prelude
   , Show (..), ShowS, shows, showChar, showString, showParen, showTuple
   , Read (..), ReadS, reads, readParen, read, lex
   , Bounded (..), Enum (..)
-  -- ** Numerical Typeclasses
+  -- ** Numerical Type Classes
   , Num (..), Fractional (..), Real (..)
   , Integral (..), even, odd, fromIntegral, realToFrac, (^)
   , RealFrac (..), Floating (..), Monoid (..)
-  -- Type Constructor Classes
+  -- ** Type Constructor Classes
   , Functor (..), Applicative (..), Alternative (..)
   , Monad (..), MonadFail(..)
   , (=<<), ap, liftM2, sequence, sequence_, mapM, mapM_
@@ -330,7 +330,8 @@ prim_eqFloat :: Float -> Float -> Bool
 prim_eqFloat external
 #endif
 
--- Equality on strings. We use a specialized implementation to aviod problems with kics2.
+-- | Equality on strings.
+--   This is a specialized implementation to avoid problems with KiCS2.
 eqString :: String -> String -> Bool
 eqString [] [] = True
 eqString [] (_:_) = False
