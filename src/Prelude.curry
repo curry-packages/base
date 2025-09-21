@@ -1,8 +1,8 @@
 --------------------------------------------------------------------------------
---- The standard prelude of Curry with type classes.
---- All exported functions, data types, type classes
---- and methods defined in this module are always
---- available in any Curry program.
+-- | The standard prelude of Curry.
+--   All exported functions, data types, type classes
+--   and methods defined in this module are always
+--   available in any Curry program.
 --------------------------------------------------------------------------------
 {-# LANGUAGE CPP #-}
 {-# OPTIONS_FRONTEND -Wno-incomplete-patterns -Wno-overlapping #-}
@@ -102,6 +102,9 @@ data Bool = False | True
 data Ordering = LT | EQ | GT
 
 ------------------------------------------------------------------------------
+--++ Predefined types which cannot be explicitly defined due to their
+--++ specific syntax:
+
 --++ data () = ()
 
 --++ data (a, b) = (a, b)
@@ -114,26 +117,28 @@ data Ordering = LT | EQ | GT
 
 --++ data (->) a b
 
---- The class `Data` defines a strict equality operator `===`
---- and a non-deterministic operation `aValue` which yields
---- all values of the given type.
---- To ensure that the operator `===` always corresponds to the
---- syntactic equality of values and `aValue ` enumerates all values,
---- instances of `Data` are automatically derived and cannot be
---- defined in a valid Curry program.
---- For data types contain functional values, `Data` instances
---- are not derived.
---- Free variables have always a data context to ensure that possible
---- values for the type of the free variable can be enumerated.
----
---- Note that the class `Data` is different from the class `Eq`,
---- since the latter defines only an equivalence relation rather
---- than syntactic equality.
+------------------------------------------------------------------------------
+-- | The class `Data` defines a strict equality operator `===`
+--   and a non-deterministic operation `aValue` which yields
+--   all values of the given type.
+--   To ensure that the operator `===` always corresponds to the
+--   syntactic equality of values and `aValue ` enumerates all values,
+--   instances of `Data` are automatically derived and cannot be
+--   defined in a valid Curry program.
+--   For data types contain functional values, `Data` instances
+--   are not derived.
+--   Free variables occurring in a valid program have always
+--   a `Data` context to ensure that possible
+--   values for the type of the free variable can be enumerated.
+--
+--   Note that the class `Data` is different from the class `Eq`,
+--   since the latter defines only an equivalence relation rather
+--   than syntactic equality.
 class Data a where
   (===)  :: a -> a -> Bool
   aValue :: a
 
---- The negation of strict equality.
+-- | The negation of strict equality.
 (/==) :: Data a => a -> a -> Bool
 x /== y = not (x ===y)
 
@@ -1561,9 +1566,9 @@ instance Applicative ((->) a) where
 -- If defined, 'some' and 'many' should be the least solutions
 -- of the equations:
 --
--- * @'some' v = (:) '<$>' v '<*>' 'many' v@
+-- * `some v = (:) <$> v <*> many v`
 --
--- * @'many' v = 'some' v '<|>' 'pure' []@
+-- * `many v = some v <|> pure []`
 class Applicative f => Alternative f where
     -- | The identity of '<|>'
     empty :: f a
@@ -2073,7 +2078,13 @@ lookup _ []          = Nothing
 lookup k ((x,y):xys) | k == x    = Just y
                      | otherwise = lookup k xys
 
---- The `Maybe` type can be used for values which could also be absent.
+-- | The `Maybe` type can be used to represent optional values, i.e.,
+--   values which could also be absent.
+--   A value of type `Maybe a` either contains a value `v` of type `a`
+--   (which is represented as `Just v`), or it is empty
+--   (represented as `Nothing`).
+--   The type `Maybe` is useful to handle errors or exceptional situations
+--   in programs in order to avoid run-time errors.
 data Maybe a = Nothing | Just a
  deriving (Eq, Ord, Show, Read)
 
