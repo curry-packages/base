@@ -31,12 +31,15 @@ curryFileMode2plmode('System.IO.AppendMode',append).
 
 'System.IO.prim_hClose'('$stream'('$inoutstream'(In,Out)),'Prelude.()') :- !,
 	flush_output(Out),
-	close(Out),
-	(In==Out -> true ; close(In)).
+	closeWithoutError(Out),
+	(In==Out -> true ; closeWithoutError(In)).
 'System.IO.prim_hClose'(Stream,'Prelude.()') :-
 	(isOutputStream(Stream) -> flush_output(Stream) ; true),
-	close(Stream).
+	closeWithoutError(Stream).
 
+% close a stream without throwing a message if the stream is already closed.
+closeWithoutError(S) :-
+        catch(close(S),_ErrorMsg,true).
 
 'System.IO.prim_hFlush'('$stream'('$inoutstream'(_,Out)),'Prelude.()') :- !,
 	flush_output(Out).
