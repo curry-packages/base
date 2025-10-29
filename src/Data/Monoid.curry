@@ -1,14 +1,14 @@
---- ----------------------------------------------------------------------------
---- Library with some useful `Monoid` instances.
----
---- @version April 2025
---- ----------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+-- | Version: April 2025
+--
+-- Library with some useful `Monoid` instances.
+-------------------------------------------------------------------------------
 
 module Data.Monoid
   ( All (..), Any (..), Sum (..), Product (..), First (..), Last (..)
   ) where
 
---- Boolean monoid under (&&)
+-- | Boolean monoid under (&&)
 newtype All = All { getAll :: Bool }
   deriving (Eq, Ord, Show, Read)
 
@@ -16,7 +16,7 @@ instance Monoid All where
   mempty = All True
   mappend (All x) (All y) = All (x && y)
 
---- Boolean monoid under (||)
+-- | Boolean monoid under (||)
 newtype Any = Any { getAny :: Bool }
   deriving (Eq, Ord, Show, Read)
 
@@ -24,7 +24,7 @@ instance Monoid Any where
   mempty = Any False
   mappend (Any x) (Any y) = Any (x || y)
 
---- Monoid under addition.
+-- | Monoid under addition.
 newtype Sum a = Sum { getSum :: a }
   deriving (Eq, Ord, Show, Read)
 
@@ -43,7 +43,7 @@ instance Monad Sum where
   return = Sum
   Sum x >>= f = f x
 
---- Monoid under multiplication.
+-- | Monoid under multiplication.
 newtype Product a = Product { getProduct :: a }
   deriving (Eq, Ord, Show, Read)
 
@@ -62,7 +62,7 @@ instance Monad Product where
   return = Product
   Product x >>= f = f x
 
---- Maybe monoid returning the leftmost Just value.
+-- | Maybe monoid returning the leftmost Just value.
 newtype First a = First { getFirst :: Maybe a }
   deriving (Eq, Ord, Show, Read)
 
@@ -81,7 +81,7 @@ instance Monoid (First a) where
   mempty = First Nothing
   mappend (First x) (First y) = First (x <|> y)
 
---- Maybe monoid returning the rightmost Just value.
+-- | Maybe monoid returning the rightmost Just value.
 newtype Last a = Last { getLast :: Maybe a }
   deriving (Eq, Ord, Show, Read)
 
