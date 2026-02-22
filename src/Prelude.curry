@@ -86,19 +86,19 @@ infixl 1 >>, >>=
 infixr 1 =<<
 infixr 0 ?, $, $!, $!!, $#, $##, `seq`, &, &>
 
---- The externally defined type of characters.
+-- | The externally defined type of characters.
 external data Char
 
---- The externally defined type of integers.
+-- | The externally defined type of integers.
 external data Int
 
---- The externally defined type of float point numbers.
+-- | The externally defined type of float point numbers.
 external data Float
 
---- The type of Boolean values.
+-- | The type of Boolean values.
 data Bool = False | True
 
---- Ordering type. Useful as a result of comparison functions.
+-- | Ordering type. Useful as a result of comparison functions.
 data Ordering = LT | EQ | GT
 
 ------------------------------------------------------------------------------
@@ -229,10 +229,10 @@ aValueChar = foldr1 (?) [minBound .. maxBound]
 
 ------------------------------------------------------------------------------
 
---- The class `Eq` defines an equality (`==`) and an inequality (`/=`) method.
---- Instances of this class should define an equivalence relationship
---- on values. For basic data types, the instances are defined as
---- syntactic equality of values.
+-- | The class `Eq` defines an equality (`==`) and an inequality (`/=`) method.
+-- Instances of this class should define an _equivalence relationship_
+-- on values. For basic data types, the instances are defined as
+-- syntactic equality of values.
 class Eq a where
   (==), (/=) :: a -> a -> Bool
 
@@ -338,9 +338,9 @@ eqString [] (_:_) = False
 eqString (_:_) [] = False
 eqString (x:xs) (y:ys) = eqChar x y && eqString xs ys
 
---- The class `Ord` defines operations to compare values of the given type
---- with respect to a total ordering.
---- A minimal instance definition for some type must define `<=` or `compare`.
+-- | The class `Ord` defines operations to compare values of the given type
+-- with respect to a total ordering.
+-- A minimal instance definition for some type must define `<=` or `compare`.
 class Eq a => Ord a where
   compare :: a -> a -> Ordering
   (<), (>), (<=), (>=) :: a -> a -> Bool
@@ -454,13 +454,13 @@ prim_ltEqFloat :: Float -> Float -> Bool
 prim_ltEqFloat external
 #endif
 
---- The type synonym `ShowS` represents strings as difference lists.
---- Composing functions of this type allows concatenation of lists
---- in constant time.
+-- | The type synonym `ShowS` represents strings as difference lists.
+-- Composing functions of this type allows concatenation of lists
+-- in constant time.
 type ShowS = String -> String
 
---- The class `Show` contains methods to transform values into
---- a string representation.
+-- | The class `Show` contains methods to transform values into
+-- a string representation.
 class Show a where
   show :: a -> String
   showsPrec :: Int -> a -> ShowS
@@ -514,15 +514,15 @@ instance Show Ordering where
   showsPrec _ EQ = showString "EQ"
   showsPrec _ GT = showString "GT"
 
---- Converts a showable value to a show function that prepends this value.
+-- | Converts a showable value to a show function that prepends this value.
 shows :: Show a => a -> ShowS
 shows = showsPrec 0
 
---- Converts a character to a show function that prepends the character.
+-- | Converts a character to a show function that prepends the character.
 showChar :: Char -> ShowS
 showChar = (:)
 
---- Converts a string to a show function that prepends the string.
+-- | Converts a string to a show function that prepends the string.
 showString :: String -> ShowS
 showString str s = foldr showChar s str
 
@@ -532,9 +532,9 @@ showListDefault (x:xs) s = '[' : shows x (showl xs)
  where showl []     = ']' : s
        showl (y:ys) = ',' : shows y (showl ys)
 
---- If the first argument is `True`, Converts a show function to a
---- show function adding enclosing brackets, otherwise the show function
---- is returned unchanged.
+-- | If the first argument is `True`, Converts a show function to a
+-- show function adding enclosing brackets, otherwise the show function
+-- is returned unchanged.
 showParen :: Bool -> ShowS -> ShowS
 showParen b s = if b then showChar '(' . s . showChar ')' else s
 
@@ -543,8 +543,8 @@ showSigned showPos p x
   | x < 0     = showParen (p > 6) (showChar '-' . showPos (-x))
   | otherwise = showPos x
 
---- Converts a list of show functions to a show function combining
---- the given show functions to a tuple representation.
+-- | Converts a list of show functions to a show function combining
+-- the given show functions to a tuple representation.
 showTuple :: [ShowS] -> ShowS
 showTuple ss = showChar '('
              . foldr1 (\s r -> s . showChar ',' . r) ss
@@ -579,15 +579,15 @@ prim_showFloatLiteral :: Float -> String
 prim_showFloatLiteral external
 
 
---- The type synonym `ReadS` represent a parser for values of type a.
---- Such a parser is a function that takes a String and
---- returns a list of possible parses as `(a,String)` pairs.
---- Thus, if the result is the empty list, there is no parse, i.e.,
---- the input string is not valid.
+-- | The type synonym `ReadS` represent a parser for values of type a.
+-- Such a parser is a function that takes a String and
+-- returns a list of possible parses as `(a,String)` pairs.
+-- Thus, if the result is the empty list, there is no parse, i.e.,
+-- the input string is not valid.
 type ReadS a = String -> [(a, String)]
 
---- The class `Read` contains method to parse strings to return values
---- corresponding to the textual representation as produced by `show`.
+-- | The class `Read` contains method to parse strings to return values
+-- corresponding to the textual representation as produced by `show`.
 class Read a where
   readsPrec :: Int -> ReadS a
   readList :: ReadS [a]
@@ -695,9 +695,9 @@ instance Read Ordering where
       readParen False (\s -> [(EQ, t) | ("EQ", t) <- lex s]) r ++
       readParen False (\s -> [(GT, t) | ("GT", t) <- lex s]) r
 
---- A parser to read data from a string.
---- For instance, `reads "42" :: [(Int,String)]` returns `[(42,[])]`, and
---- `reads "hello" :: [(Int,String)]` returns `[]`.
+-- | A parser to read data from a string.
+-- For instance, `reads "42" :: [(Int,String)]` returns `[(42,[])]`, and
+-- `reads "hello" :: [(Int,String)]` returns `[]`.
 reads :: Read a => ReadS a
 reads = readsPrec 0
 
@@ -709,9 +709,9 @@ readListDefault = readParen False (\r -> [pr | ("[",s) <- lex r, pr <- readl s])
                    [ (x : xs, v) | (",", t)  <- lex s, (x, u) <- reads t
                                  , (xs,v) <- readl' u ]
 
---- `readParen True p` parses what `p` parses, but surrounded with parentheses.
---- `readParen False p` parses what `p` parses, but the string to be parsed
---- can be optionally with parentheses.
+-- | `readParen True p` parses what `p` parses, but surrounded with parentheses.
+-- `readParen False p` parses what `p` parses, but the string to be parsed
+-- can be optionally with parentheses.
 readParen :: Bool -> ReadS a -> ReadS a
 readParen b g = if b then mandatory else optional
  where optional r = g r ++ mandatory r
@@ -723,20 +723,20 @@ readSigned p = readParen False read'
  where read' r = read'' r ++ [(-x, t) | ("-", s) <- lex r, (x, t) <- read'' s]
        read'' r = [(n, s) | (str, s) <- lex r, (n, "") <- p str]
 
---- Reads data of the given type from a string.
---- The operations fails if the data cannot be parsed.
---- For instance `read "42" :: Int` evaluates to `42`,
---- and `read "hello" :: Int` fails.
+-- | Reads data of the given type from a string.
+-- The operations fails if the data cannot be parsed.
+-- For instance `read "42" :: Int` evaluates to `42`,
+-- and `read "hello" :: Int` fails.
 read :: Read a => String -> a
 read s =  case [x | (x, t) <- reads s, ("", "") <- lex t] of
   [x] -> x
 
---- Reads a single lexeme from the given string.
---- Initial white space is discarded and the characters of the lexeme
---- are returned. If the input string contains only white space,
---- `lex` returns the empty string as lexeme.
---- If there is no legal lexeme at the beginning of the input string,
---- the operation fails, i.e., `[]` is returned.
+-- | Reads a single lexeme from the given string.
+-- Initial white space is discarded and the characters of the lexeme
+-- are returned. If the input string contains only white space,
+-- `lex` returns the empty string as lexeme.
+-- If there is no legal lexeme at the beginning of the input string,
+-- the operation fails, i.e., `[]` is returned.
 lex :: ReadS String
 lex xs = case xs of
   ""                  -> [("", "")]
@@ -818,7 +818,7 @@ readFloatLiteral s = prim_readFloatLiteral $## s
 prim_readFloatLiteral :: String -> [(Float, String)]
 prim_readFloatLiteral external
 
---- Instances of the class `Bounded` are types with minmal and maximal values.
+-- | Instances of the class `Bounded` are types with minmal and maximal values.
 class Bounded a where
   minBound, maxBound :: a
 
@@ -855,10 +855,10 @@ instance Bounded Ordering where
   maxBound = LT
   minBound = GT
 
---- The class `Enum` provides methods to enumerate values of the given
---- type in a sequential order.
---- If a type is an instance of `Enum`, one can use the standard
---- notation for arithmetic sequences to enumerate list of values.
+-- | The class `Enum` provides methods to enumerate values of the given
+-- type in a sequential order.
+-- If a type is an instance of `Enum`, one can use the standard
+-- notation for arithmetic sequences to enumerate list of values.
 class Enum a where
   succ :: a -> a
   pred :: a -> a
@@ -932,9 +932,9 @@ instance Enum Ordering where
   enumFrom x = enumFromTo x GT
   enumFromThen x y = enumFromThenTo x y (if x <= y then GT else LT)
 
---- The class of basic numeric values.
---- For type wich are instances of `Num`, one can write values
---- as integers which are converted by an implicit `fromInt` application.
+-- | The class of basic numeric values.
+-- For type wich are instances of `Num`, one can write values
+-- as integers which are converted by an implicit `fromInt` application.
 class Num a where
   (+), (-), (*) :: a -> a -> a
   negate :: a -> a
@@ -1065,7 +1065,7 @@ prim_intToFloat :: Int -> Float
 prim_intToFloat external
 #endif
 
---- The class `Fractional` defines numbers with a division operation.
+-- | The class `Fractional` defines numbers with a division operation.
 class Num a => Fractional a where
   (/) :: a -> a -> a
   recip :: a -> a
@@ -1089,7 +1089,7 @@ prim_divFloat :: Float -> Float -> Float
 prim_divFloat external
 #endif
 
---- The class of real numbers which can be mapped to floats.
+-- | The class of real numbers which can be mapped to floats.
 class (Num a, Ord a) => Real a where
   toFloat :: a -> Float
 
@@ -1099,7 +1099,7 @@ instance Real Int where
 instance Real Float where
   toFloat x = x
 
---- The class of `Integral` numbers supports integer division operators.
+-- | The class of `Integral` numbers supports integer division operators.
 class (Real a, Enum a) => Integral a where
   div, mod :: a -> a -> a
   quot, rem :: a -> a -> a
@@ -1121,19 +1121,19 @@ instance Integral Int where
   quotRem n d = (n `quotInt` d, n `remInt` d)
   toInt x = x
 
---- Returns whether an integer is even.
+-- | Returns whether an integer is even.
 even :: Integral a => a -> Bool
 even n = n `rem` 2 == 0
 
---- Returns whether an integer is odd.
+-- | Returns whether an integer is odd.
 odd :: Integral a => a -> Bool
 odd = not . even
 
---- General coercion from integral types.
+-- | General coercion from integral types.
 fromIntegral :: (Integral a, Num b) => a -> b
 fromIntegral = fromInt . toInt
 
---- General coercion to fractional types.
+-- | General coercion to fractional types.
 realToFrac :: (Real a, Fractional b) => a -> b
 realToFrac = fromFloat . toFloat
 
@@ -1193,8 +1193,8 @@ prim_remInt :: Int -> Int -> Int
 prim_remInt external
 #endif
 
---- Instances of the class `RealFrac` supports extracting components
---- of `Fractional` values.
+-- | Instances of the class `RealFrac` supports extracting components
+-- of `Fractional` values.
 class (Real a, Fractional a) => RealFrac a where
   properFraction :: Integral b => a -> (b, a)
   truncate :: Integral b => a -> b
@@ -1247,8 +1247,8 @@ prim_roundFloat :: Float -> Int
 prim_roundFloat external
 #endif
 
---- The class `Floating` defines `Fractional`s with
---- trigonometric and hyperbolic and related functions.
+-- | The class `Floating` defines `Fractional`s with
+-- trigonometric and hyperbolic and related functions.
 class Fractional a => Floating a where
   pi :: a
   exp, log, sqrt :: a -> a
@@ -1447,7 +1447,7 @@ prim_atanhFloat :: Float -> Float
 prim_atanhFloat external
 #endif
 
---- Raises a number to a non-negative integer power.
+-- | Raises a number to a non-negative integer power.
 (^) :: (Num a, Integral b) => a -> b -> a
 x0 ^ y0 | y0 < 0    = error "Negative exponent"
         | y0 == 0   = 1
@@ -1461,8 +1461,8 @@ x0 ^ y0 | y0 < 0    = error "Negative exponent"
                   | y == 1 = x * z
                   | otherwise = g (x * x) (y `quot` 2) (x * z)
 
---- The class `Monoid` defines types with an associative
---- binary operation `mappend` having an identity `mempty`.
+-- | The class `Monoid` defines types with an associative
+-- binary operation `mappend` having an identity `mempty`.
 class Monoid a where
   mempty  :: a
   mappend :: a -> a -> a
@@ -1511,11 +1511,11 @@ instance Monoid Ordering where
   EQ `mappend` y = y
   GT `mappend` _ = GT
 
---- The class `Functor` defines a general mapping of values contained
---- in structures.
---- A type constructor `f` is a Functor if it provides a function `fmap`
---- which applies a function of type `(a -> b)` to all values contained
---- in a structure of type `f a` yielding a structure of type `f b`.
+-- | The class `Functor` defines a general mapping of values contained
+-- in structures.
+-- A type constructor `f` is a Functor if it provides a function `fmap`
+-- which applies a function of type `(a -> b)` to all values contained
+-- in a structure of type `f a` yielding a structure of type `f b`.
 class Functor f where
   fmap :: (a -> b) -> f a -> f b
   (<$) :: a -> f b -> f a
@@ -1528,16 +1528,16 @@ instance Functor [] where
 instance Functor ((->) r) where
   fmap = (.)
 
---- Apply a function of type `(a -> b)`, given as the left argument,
---- to a value of type `f a`, where `f` is a functor,
---- to get a value of type `f b`.
---- Basically, this is an infix operator version of `fmap`.
+-- | Apply a function of type `(a -> b)`, given as the left argument,
+-- to a value of type `f a`, where `f` is a functor,
+-- to get a value of type `f b`.
+-- Basically, this is an infix operator version of `fmap`.
 (<$>) :: Functor f => (a -> b) -> f a -> f b
 (<$>) = fmap
 
---- The class `Applicative` defines a functor structure
---- with application operators to apply functions and argument
---- contained in structure and combining their results back into a structure.
+-- | The class `Applicative` defines a functor structure
+-- with application operators to apply functions and argument
+-- contained in structure and combining their results back into a structure.
 class Functor f => Applicative f where
   pure :: a -> f a
   (<*>) :: f (a -> b) -> f a -> f b
@@ -1594,9 +1594,9 @@ instance Alternative [] where
     empty = []
     (<|>) = (++)
 
---- The class `Monad` defines operators for the sequential composition
---- of computations.
---- For instances of `Monad`, the standard `do` notation can be used.
+-- | The class `Monad` defines operators for the sequential composition
+-- of computations.
+-- For instances of `Monad`, the standard `do` notation can be used.
 class Applicative m => Monad m where
   (>>=) :: m a -> (a -> m b) -> m b
   (>>) :: m a -> m b -> m b
@@ -1612,114 +1612,114 @@ instance Monad [] where
 instance Monad ((->) r) where
   f >>= k = \ r -> k (f r) r
 
---- The class `MonadFail` adds a `fail` operation to a monadic structure.
+-- | The class `MonadFail` adds a `fail` operation to a monadic structure.
 class Monad m => MonadFail m where
   fail :: String -> m a
 
 instance MonadFail [] where
   fail _ = []
 
---- Same as '>>=', but with the arguments interchanged.
+-- | Same as '>>=', but with the arguments interchanged.
 (=<<) :: Monad m => (a -> m b) -> m a -> m b
 f =<< x = x >>= f
 
---- Promotes function application to a monad.
---- For instance,
----
----     > pure not `ap` Just True
----     Just False
----
---- This is useful to promote application of functions with larger arities
---- to a monad, as 'liftM2' for arity `2`. For instance,
----
----     > pure (\x y z -> x + y * z) `ap` Just 7 `ap` Just 5 `ap` Just 7
----     Just 42
+-- | Promotes function application to a monad.
+-- For instance,
+--
+--     > pure not `ap` Just True
+--     Just False
+--
+-- This is useful to promote application of functions with larger arities
+-- to a monad, as 'liftM2' for arity `2`. For instance,
+--
+--     > pure (\x y z -> x + y * z) `ap` Just 7 `ap` Just 5 `ap` Just 7
+--     Just 42
 ap :: Monad m => m (a -> b) -> m a -> m b
 ap m1 m2 = do
   x1 <- m1
   x2 <- m2
   return (x1 x2)
 
---- Promotes a binary function to a monad.
---- The function arguments are scanned from left to right.
---- For instance, `liftM2 (+) [1,2] [3,4]` evaluates to `[4,5,5,6]`, and
---- `liftM2 (,) [1,2] [3,4]` evaluates to `[(1,3),(1,4),(2,3),(2,4)]`.
+-- | Promotes a binary function to a monad.
+-- The function arguments are scanned from left to right.
+-- For instance, `liftM2 (+) [1,2] [3,4]` evaluates to `[4,5,5,6]`, and
+-- `liftM2 (,) [1,2] [3,4]` evaluates to `[(1,3),(1,4),(2,3),(2,4)]`.
 liftM2 :: Monad m => (a1 -> a2 -> r) -> m a1 -> m a2 -> m r
 liftM2 f m1 m2 = do
   x1 <- m1
   x2 <- m2
   return (f x1 x2)
 
---- Executes a sequence of monadic actions and collects all results in a list.
+-- | Executes a sequence of monadic actions and collects all results in a list.
 sequence :: Monad m => [m a] -> m [a]
 sequence []     = return []
 sequence (c:cs) = do x <- c
                      xs <- sequence cs
                      return (x : xs)
 
---- Executes a sequence of monadic actions and ignores the results.
+-- | Executes a sequence of monadic actions and ignores the results.
 sequence_ :: Monad m => [m _] -> m ()
 sequence_ = foldr (>>) (return ())
 
---- Maps a monadic action function on a list of elements.
---- The results of all monadic actions are collected in a list.
+-- | Maps a monadic action function on a list of elements.
+-- The results of all monadic actions are collected in a list.
 mapM :: Monad m => (a -> m b) -> [a] -> m [b]
 mapM f = sequence . map f
 
---- Maps a monadic action function on a list of elements.
---- The results of all monadic actions are ignored.
+-- | Maps a monadic action function on a list of elements.
+-- The results of all monadic actions are ignored.
 mapM_ :: Monad m => (a -> m _) -> [a] -> m ()
 mapM_ f = sequence_ . map f
 
---- Returns true if the argument is an uppercase letter.
+-- | Returns true if the argument is an uppercase letter.
 isUpper :: Char -> Bool
 isUpper c = c >= 'A' && c <= 'Z'
 
---- Returns true if the argument is an lowercase letter.
+-- | Returns true if the argument is an lowercase letter.
 isLower :: Char -> Bool
 isLower c = c >= 'a' && c <= 'z'
 
---- Returns true if the argument is a letter.
+-- | Returns true if the argument is a letter.
 isAlpha :: Char -> Bool
 isAlpha c = isUpper c || isLower c
 
---- Returns true if the argument is a decimal digit.
+-- | Returns true if the argument is a decimal digit.
 isDigit :: Char -> Bool
 isDigit c = c >= '0' && c <= '9'
 
---- Returns true if the argument is a letter or digit.
+-- | Returns true if the argument is a letter or digit.
 isAlphaNum :: Char -> Bool
 isAlphaNum c = isAlpha c || isDigit c
 
---- Returns true if the argument is a binary digit.
+-- | Returns true if the argument is a binary digit.
 isBinDigit :: Char -> Bool
 isBinDigit c = c == '0' || c == '1'
 
---- Returns true if the argument is an octal digit.
+-- | Returns true if the argument is an octal digit.
 isOctDigit :: Char -> Bool
 isOctDigit c = c >= '0' && c <= '7'
 
---- Returns true if the argument is a hexadecimal digit.
+-- | Returns true if the argument is a hexadecimal digit.
 isHexDigit :: Char -> Bool
 isHexDigit c = isDigit c || c >= 'A' && c <= 'F'
                          || c >= 'a' && c <= 'f'
 
---- Returns true if the argument is a white space.
+-- | Returns true if the argument is a white space.
 isSpace :: Char -> Bool
 isSpace c = c == ' '    || c == '\t' || c == '\n' ||
             c == '\r'   || c == '\f' || c == '\v' ||
             c == '\xa0' || ord c `elem` [5760, 6158, 8192, 8239, 8287, 12288]
 
---- Converts a character into its ASCII value.
+-- | Converts a character into its ASCII value.
 ord :: Char -> Int
 ord c = prim_ord $# c
 
 prim_ord :: Char -> Int
 prim_ord external
 
---- Converts a Unicode value into a character.
---- The conversion is total, i.e., for out-of-bound values, the smallest
---- or largest character is generated.
+-- | Converts a Unicode value into a character.
+-- The conversion is total, i.e., for out-of-bound values, the smallest
+-- or largest character is generated.
 chr :: Int -> Char
 chr n | n < 0       = prim_chr 0
       | n > 1114111 = prim_chr 1114111
@@ -1728,12 +1728,12 @@ chr n | n < 0       = prim_chr 0
 prim_chr :: Int -> Char
 prim_chr external
 
---- The type `String` is a type synonym for list of characters so that
---- all list operations can be used on strings.
+-- | The type `String` is a type synonym for list of characters so that
+-- all list operations can be used on strings.
 type String = [Char]
 
---- Breaks a string into a list of lines where a line is terminated at a
---- newline character. The resulting lines do not contain newline characters.
+-- | Breaks a string into a list of lines where a line is terminated at a
+-- newline character. The resulting lines do not contain newline characters.
 lines :: String -> [String]
 lines []       = []
 lines as@(_:_) = let (l, bs) = splitLine as in l : lines bs
@@ -1742,338 +1742,339 @@ lines as@(_:_) = let (l, bs) = splitLine as in l : lines bs
                                        else let (ds, es) = splitLine cs
                                             in (c : ds, es)
 
---- Concatenates a list of strings with terminating newlines.
+-- | Concatenates a list of strings with terminating newlines.
 unlines :: [String] -> String
 unlines = concatMap (++ "\n")
 
---- Breaks a string into a list of words where the words are delimited by
---- white spaces.
+-- | Breaks a string into a list of words where the words are delimited by
+-- white spaces.
 words :: String -> [String]
 words s = let s1 = dropWhile isSpace s
           in if s1 == "" then []
                          else let (w, s2) = break isSpace s1
                               in w : words s2
 
---- Concatenates a list of strings with a blank between two strings.
+-- | Concatenates a list of strings with a blank between two strings.
 unwords :: [String] -> String
 unwords ws = if null ws then []
                         else foldr1 (\w s -> w ++ ' ' : s) ws
 
 
---- Right-associative application.
+-- | Right-associative application.
 ($) :: (a -> b) -> a -> b
 f $ x = f x
 
---- Right-associative application with strict evaluation of its argument
---- to head normal form.
+-- | Right-associative application with strict evaluation of its argument
+-- to head normal form.
 ($!) :: (a -> b) -> a -> b
 ($!) external
 
---- Right-associative application with strict evaluation of its argument
---- to normal form.
+-- | Right-associative application with strict evaluation of its argument
+-- to normal form.
 ($!!) :: (a -> b) -> a -> b
 ($!!) external
 
---- Right-associative application with strict evaluation of its argument
---- to a non-variable term.
+-- | Right-associative application with strict evaluation of its argument
+-- to a non-variable term.
 ($#) :: (a -> b) -> a -> b
 f $# x = f $! (ensureNotFree x)
 
---- Right-associative application with strict evaluation of its argument
---- to ground normal form.
+-- | Right-associative application with strict evaluation of its argument
+-- to ground normal form.
 ($##) :: (a -> b) -> a -> b
 ($##) external
 
---- Evaluates the first argument to head normal form (which could also
---- be a free variable) and returns the second argument.
+-- | Evaluates the first argument to head normal form (which could also
+-- be a free variable) and returns the second argument.
 seq :: _ -> a -> a
 x `seq` y = const y $! x
 
---- Evaluates the argument to head normal form and returns it.
---- Suspends until the result is bound to a non-variable term.
+-- | Evaluates the argument to head normal form and returns it.
+-- Suspends until the result is bound to a non-variable term.
 ensureNotFree :: a -> a
 ensureNotFree external
 
---- Evaluates the argument to spine form and returns it.
---- Suspends until the result is bound to a non-variable spine.
+-- | Evaluates the argument to spine form and returns it.
+-- Suspends until the result is bound to a non-variable spine.
 ensureSpine :: [a] -> [a]
 ensureSpine l = ensureList (ensureNotFree l)
  where ensureList []     = []
        ensureList (x:xs) = x : ensureSpine xs
 
---- Evaluates the argument to normal form and returns it.
+-- | Evaluates the argument to normal form and returns it.
 normalForm :: a -> a
 normalForm x = id $!! x
 
---- Evaluates the argument to ground normal form and returns it.
---- Suspends as long as the normal form of the argument is not ground.
+-- | Evaluates the argument to ground normal form and returns it.
+-- Suspends as long as the normal form of the argument is not ground.
 groundNormalForm :: a -> a
 groundNormalForm x = id $## x
 
 
---- Function composition.
+-- | Function composition.
 (.) :: (b -> c) -> (a -> b) -> (a -> c)
 f . g = \x -> f (g x)
 
---- Identity function.
+-- | Identity function.
 id :: a -> a
 id x = x
 
---- Constant function.
+-- | Constant function.
 const :: a -> _ -> a
 const x _ = x
 
---- `asTypeOf` is a type-restricted version of `const`.
---- It is usually used as an infix operator, and its typing forces its first
---- argument (which is usually overloaded) to have the same type as the second.
+-- | `asTypeOf` is a type-restricted version of `const`.
+-- It is usually used as an infix operator, and its typing forces its first
+-- argument (which is usually overloaded) to have the same type as the second.
 asTypeOf :: a -> a -> a
 asTypeOf = const
 
---- Converts an uncurried function to a curried function.
+-- | Converts an uncurried function to a curried function.
 curry :: ((a, b) -> c) -> a -> b -> c
 curry f a b =  f (a, b)
 
---- Converts an curried function to a function on pairs.
+-- | Converts an curried function to a function on pairs.
 uncurry :: (a -> b -> c) -> (a, b) -> c
 uncurry f (a, b) = f a b
 
---- `flip f` is identical to `f`, but with the order of arguments reversed.
+-- | `flip f` is identical to `f`, but with the order of arguments reversed.
 flip :: (a -> b -> c) -> b -> a -> c
 flip f x y = f y x
 
---- Repeats application of a function until a predicate holds.
+-- | Repeats application of a function until a predicate holds.
 until :: (a -> Bool) -> (a -> a) -> a -> a
 until p f x = if p x then x else until p f (f x)
 
 
---- Sequential conjunction on Booleans.
+-- | Sequential conjunction on Booleans.
 (&&) :: Bool -> Bool -> Bool
 True  && x = x
 False && _ = False
 
---- Sequential disjunction on Booleans.
+-- | Sequential disjunction on Booleans.
 (||) :: Bool -> Bool -> Bool
 True  || _ = True
 False || x = x
 
---- Negation on Booleans.
+-- | Negation on Booleans.
 not :: Bool -> Bool
 not True  = False
 not False = True
 
---- Useful name for the last condition in a sequence of conditional equations.
+-- | Useful name for the last condition in a sequence of conditional equations.
 otherwise :: Bool
 otherwise = True
 
---- The standard conditional. It suspends if the condition is a free variable.
+-- | The standard conditional. It suspends if the condition is a free variable.
 ifThenElse :: Bool -> a -> a -> a
 ifThenElse b t f = case b of True  -> t
                              False -> f
 
---- Selects the first component of a pair.
+-- | Selects the first component of a pair.
 fst :: (a, _) -> a
 fst (x, _) = x
 
---- Selects the second component of a pair.
+-- | Selects the second component of a pair.
 snd :: (_, b) -> b
 snd (_, y) = y
 
 
---- Computes the first element of a list.
+-- | Computes the first element of a list.
 head :: [a] -> a
 head (x:_) = x
 
---- Computes the remaining elements of a list.
+-- | Computes the remaining elements of a list.
 tail :: [a] -> [a]
 tail (_:xs) = xs
 
---- Is a list empty?
+-- | Is a list empty?
 null :: [_] -> Bool
 null []    = True
 null (_:_) = False
 
---- Concatenates two lists.
---- Since it is flexible, it could be also used to split a list
---- into two sublists etc.
+-- | Concatenates two lists.
+-- Since it is flexible, it could be also used to split a list
+-- into two sublists etc.
 (++) :: [a] -> [a] -> [a]
 []     ++ ys = ys
 (x:xs) ++ ys = x : xs ++ ys
 
---- Computes the length of a list.
+-- | Computes the length of a list.
 length :: [_] -> Int
 length [] = 0
 length (_:xs) = 1 + length xs
 
---- List index (subscript) operator, head has index 0.
+-- | List index (subscript) operator, head has index 0.
 (!!) :: [a] -> Int -> a
 (x:xs) !! n | n == 0 = x
             | n > 0  = xs !! (n - 1)
 
---- Maps a function on all elements of a list.
+-- | Maps a function on all elements of a list.
 map :: (a -> b) -> [a] -> [b]
 map _ []     = []
 map f (x:xs) = f x : map f xs
 
---- Accumulates all list elements by applying a binary operator from
---- left to right.
+-- | Accumulates all list elements by applying a binary operator from
+-- left to right.
 foldl :: (a -> b -> a) -> a -> [b] -> a
 foldl _ z []     = z
 foldl f z (x:xs) = foldl f (f z x) xs
 
---- Accumulates a non-empty list from left to right.
+-- | Accumulates a non-empty list from left to right.
 foldl1 :: (a -> a -> a) -> [a] -> a
 foldl1 f (x:xs) = foldl f x xs
 
---- Accumulates all list elements by applying a binary operator from
---- right to left.
+-- | Accumulates all list elements by applying a binary operator from
+-- right to left.
 foldr :: (a -> b -> b) -> b -> [a] -> b
 foldr _ z []     = z
 foldr f z (x:xs) = f x (foldr f z xs)
 
---- Accumulates a non-empty list from right to left:
+-- | Accumulates a non-empty list from right to left:
 foldr1 :: (a -> a -> a) -> [a] -> a
 foldr1 _ [x]          = x
 foldr1 f (x:xs@(_:_)) = f x (foldr1 f xs)
 
---- Filters all elements satisfying a given predicate in a list.
+-- | Filters all elements satisfying a given predicate in a list.
 filter :: (a -> Bool) -> [a] -> [a]
 filter _ []     = []
 filter p (x:xs) = if p x then x : filter p xs
                          else filter p xs
 
---- Joins two lists into one list of pairs. If one input list is shorter than
---- the other, the additional elements of the longer list are discarded.
+-- | Joins two lists into one list of pairs. If one input list is shorter than
+-- the other, the additional elements of the longer list are discarded.
 zip :: [a] -> [b] -> [(a, b)]
 zip []     _      = []
 zip (_:_)  []     = []
 zip (x:xs) (y:ys) = (x, y) : zip xs ys
 
---- Joins three lists into one list of triples. If one input list is shorter
---- than the other, the additional elements of the longer lists are discarded.
+-- | Joins three lists into one list of triples. If one input list is shorter
+-- than the other, the additional elements of the longer lists are discarded.
 zip3 :: [a] -> [b] -> [c] -> [(a, b, c)]
 zip3 []     _      _      = []
 zip3 (_:_)  []     _      = []
 zip3 (_:_)  (_:_)  []     = []
 zip3 (x:xs) (y:ys) (z:zs) = (x, y, z) : zip3 xs ys zs
 
---- Joins two lists into one list by applying a combination function to
---- corresponding pairs of elements. Thus `zip = zipWith (,)`
+-- | Joins two lists into one list by applying a combination function to
+-- corresponding pairs of elements. Thus `zip = zipWith (,)`
 zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
 zipWith _ []     _      = []
 zipWith _ (_:_)  []     = []
 zipWith f (x:xs) (y:ys) = f x y : zipWith f xs ys
 
---- Joins three lists into one list by applying a combination function to
---- corresponding triples of elements. Thus `zip3 = zipWith3 (,,)`
+-- | Joins three lists into one list by applying a combination function to
+-- corresponding triples of elements. Thus `zip3 = zipWith3 (,,)`
 zipWith3 :: (a -> b -> c -> d) -> [a] -> [b] -> [c] -> [d]
 zipWith3 _ []     _      _      = []
 zipWith3 _ (_:_)  []     _      = []
 zipWith3 _ (_:_)  (_:_)  []     = []
 zipWith3 f (x:xs) (y:ys) (z:zs) = f x y z : zipWith3 f xs ys zs
 
---- Transforms a list of pairs into a pair of lists.
+-- | Transforms a list of pairs into a pair of lists.
 unzip :: [(a, b)] -> ([a], [b])
 unzip []          = ([], [])
 unzip ((x, y):ps) = (x : xs, y : ys)
  where (xs, ys) = unzip ps
 
---- Transforms a list of triples into a triple of lists.
+-- | Transforms a list of triples into a triple of lists.
 unzip3 :: [(a, b, c)] -> ([a], [b], [c])
 unzip3 []             = ([], [], [])
 unzip3 ((x, y, z):ts) = (x : xs, y : ys, z : zs)
  where (xs, ys, zs) = unzip3 ts
 
---- Concatenates a list of lists into one list.
+-- | Concatenates a list of lists into one list.
 concat :: [[a]] -> [a]
 concat = foldr (++) []
 
---- Maps a function from elements to lists and merges the result into one list.
+-- | Maps a function from elements to lists and merges the result into one list.
 concatMap :: (a -> [b]) -> [a] -> [b]
 concatMap f = concat . map f
 
---- Infinite list of repeated applications of a function f to an element x.
---- Thus, `iterate f x = [x, f x, f (f x), ...]`.
+-- | Infinite list of repeated applications of a function f to an element x.
+-- Thus, `iterate f x = [x, f x, f (f x), ...]`.
 iterate :: (a -> a) -> a -> [a]
 iterate f x = x : iterate f (f x)
 
---- Infinite list where all elements have the same value.
---- Thus, `repeat x = [x, x, x, ...]`.
+-- | Infinite list where all elements have the same value.
+-- Thus, `repeat x = [x, x, x, ...]`.
 repeat :: a -> [a]
 repeat x = x : repeat x
 
---- List of length n where all elements have the same value.
+-- | List of length n where all elements have the same value.
 replicate :: Int -> a -> [a]
 replicate n x = take n (repeat x)
 
---- Returns prefix of length n.
+-- | Returns prefix of length n.
 take :: Int -> [a] -> [a]
 take n l = if n <= 0 then [] else takep n l
  where takep _ []     = []
        takep m (x:xs) = x : take (m - 1) xs
 
---- Returns suffix without first n elements.
+-- | Returns suffix without first n elements.
 drop :: Int -> [a] -> [a]
 drop n xs = if n <= 0 then xs
                       else case xs of []     -> []
                                       (_:ys) -> drop (n - 1) ys
 
---- `splitAt n xs` is equivalent to `(take n xs, drop n xs)`
+-- | `splitAt n xs` is equivalent to `(take n xs, drop n xs)`
 splitAt :: Int -> [a] -> ([a], [a])
 splitAt n l = if n <= 0 then ([], l) else splitAtp n l
   where splitAtp _ []     = ([], [])
         splitAtp m (x:xs) = let (ys, zs) = splitAt (m - 1) xs in (x : ys, zs)
 
---- Returns longest prefix with elements satisfying a predicate.
+-- | Returns longest prefix with elements satisfying a predicate.
 takeWhile :: (a -> Bool) -> [a] -> [a]
 takeWhile _ []     = []
 takeWhile p (x:xs) = if p x then x : takeWhile p xs else []
 
---- Returns suffix without takeWhile prefix.
+-- | Returns the suffix of a list without the 'takeWhile' prefix.
 dropWhile :: (a -> Bool) -> [a] -> [a]
 dropWhile _ []     = []
 dropWhile p (x:xs) = if p x then dropWhile p xs else x : xs
 
---- `span p xs` is equivalent to `(takeWhile p xs, dropWhile p xs)`
+-- | `span p xs` is equivalent to `(takeWhile p xs, dropWhile p xs)`
 span :: (a -> Bool) -> [a] -> ([a], [a])
 span _ []     = ([], [])
 span p (x:xs) | p x       = let (ys, zs) = span p xs in (x : ys, zs)
               | otherwise = ([], x : xs)
 
---- `break p xs` is equivalent to
---- `(takeWhile (not . p) xs, dropWhile (not . p) xs)`.
---- Thus, it breaks a list at the first occurrence of an element satisfying p.
+-- | `break p xs` is equivalent to
+-- `(takeWhile (not . p) xs, dropWhile (not . p) xs)`.
+-- Thus, it breaks a list at the first occurrence of an element satisfying
+-- predicate `p`.
 break :: (a -> Bool) -> [a] -> ([a], [a])
 break p = span (not . p)
 
---- Reverses the order of all elements in a list.
+-- | Reverses the order of all elements in a list.
 reverse :: [a] -> [a]
 reverse = foldl (flip (:)) []
 
---- Computes the conjunction of a Boolean list.
+-- | Computes the conjunction of a Boolean list.
 and :: [Bool] -> Bool
 and = foldr (&&) True
 
---- Computes the disjunction of a Boolean list.
+-- | Computes the disjunction of a Boolean list.
 or :: [Bool] -> Bool
 or = foldr (||) False
 
---- Is there an element in a list satisfying a given predicate?
+-- | Is there an element in a list satisfying a given predicate?
 any :: (a -> Bool) -> [a] -> Bool
 any p = or . map p
 
---- Is a given predicate satisfied by all elements in a list?
+-- | Is a given predicate satisfied by all elements in a list?
 all :: (a -> Bool) -> [a] -> Bool
 all p = and . map p
 
---- Element of a list?
+-- | Element of a list?
 elem :: Eq a => a -> [a] -> Bool
 elem x = any (x ==)
 
---- Not element of a list?
+-- | Not element of a list?
 notElem :: Eq a => a -> [a] -> Bool
 notElem x = all (x /=)
 
---- Looks up a key in an association list.
+-- | Looks up a key in an association list.
 lookup :: Eq a => a -> [(a, b)] -> Maybe b
 lookup _ []          = Nothing
 lookup k ((x,y):xys) | k == x    = Just y
@@ -2122,15 +2123,16 @@ instance Monad Maybe where
 instance MonadFail Maybe where
   fail _ = Nothing
 
---- The `maybe` function takes a default value, a function, and a `Maybe` value.
---- If the `Maybe` value is `Nothing`, the default value is returned.
---- Otherwise, the function is applied to the value inside the `Just`
---- and the result is returned.
+-- | The `maybe` function takes a default value, a function, and
+-- a `Maybe` value.
+-- If the `Maybe` value is `Nothing`, the default value is returned.
+-- Otherwise, the function is applied to the value inside the `Just`
+-- and the result is returned.
 maybe :: b -> (a -> b) -> Maybe a -> b
 maybe n _ Nothing  = n
 maybe _ f (Just x) = f x
 
---- The `Either` type can be used to combine values of two different types.
+-- | The `Either` type can be used to combine values of two different types.
 data Either a b = Left a
                 | Right b
   deriving (Eq, Ord, Show, Read)
@@ -2148,14 +2150,14 @@ instance Monad (Either a) where
   (Left e)  >>= _ = Left e
   (Right x) >>= f = f x
 
---- Apply a case analysis to a value of the Either type.
---- If the value is `Left x`, the first function is applied to `x`.
---- If the value is `Right y`, the second function is applied to `y`.
+-- | Apply a case analysis to a value of the Either type.
+-- If the value is `Left x`, the first function is applied to `x`.
+-- If the value is `Right y`, the second function is applied to `y`.
 either :: (a -> c) -> (b -> c) -> Either a b -> c
 either left _     (Left  a) = left a
 either _    right (Right b) = right b
 
---- The externally defined type of IO actions.
+-- | The externally defined type of IO actions.
 external data IO _
 
 instance Monoid a => Monoid (IO a) where
@@ -2189,11 +2191,11 @@ bindIO external
 returnIO :: a -> IO a
 returnIO external
 
---- An action that reads a character from standard output and returns it.
+-- | An action that reads a character from standard output and returns it.
 getChar :: IO Char
 getChar external
 
---- An action that reads a line from standard input and returns it.
+-- | An action that reads a line from standard input and returns it.
 getLine :: IO String
 getLine = do c <- getChar
              case c of
@@ -2201,31 +2203,31 @@ getLine = do c <- getChar
                _ -> do cs <- getLine
                        return (c : cs)
 
---- An action that puts its character argument on standard output.
+-- | An action that puts its character argument on standard output.
 putChar :: Char -> IO ()
 putChar c = prim_putChar $# c
 
 prim_putChar :: Char -> IO ()
 prim_putChar external
 
---- Action to print a string on standard output.
+-- | Action to print a string on standard output.
 putStr :: String -> IO ()
 putStr []     = return ()
 putStr (c:cs) = putChar c >> putStr cs
 
---- Action to print a string with a newline on standard output.
+-- | Action to print a string with a newline on standard output.
 putStrLn :: String -> IO ()
 putStrLn cs = putStr cs >> putChar '\n'
 
---- Converts a term into a string and prints it.
+-- | Converts a term into a string and prints it.
 print :: Show a => a -> IO ()
 print = putStrLn . show
 
---- The `FilePath` is j type synonym for strings.
---- It is useful to mark in type signatures if a file path is required.
+-- | The `FilePath` is j type synonym for strings.
+-- It is useful to mark in type signatures if a file path is required.
 type FilePath = String
 
---- An action that (lazily) reads a file and returns its contents.
+-- | An action that (lazily) reads a file and returns its contents.
 readFile :: FilePath -> IO String
 readFile f = prim_readFile $## f
 
@@ -2238,28 +2240,28 @@ prim_readFileContents :: FilePath -> String
 prim_readFileContents external
 #endif
 
---- An action that writes a file.
+-- | An action that writes a file.
 writeFile :: FilePath -> String -> IO ()
 writeFile f s = (prim_writeFile $## f) s
 
 prim_writeFile :: FilePath -> String -> IO ()
 prim_writeFile external
 
---- An action that appends a string to a file.
---- It behaves like `writeFile` if the file does not exist.
+-- | An action that appends a string to a file.
+-- It behaves like `writeFile` if the file does not exist.
 appendFile :: FilePath -> String -> IO ()
 appendFile f s = (prim_appendFile $## f) s
 
 prim_appendFile :: FilePath -> String -> IO ()
 prim_appendFile external
 
---- The (abstract) type of error values.
---- Currently, it distinguishes between general I/O errors,
---- user-generated errors (see 'userError'), failures and non-determinism
---- errors during I/O computations. These errors can be caught by 'catch'.
---- Each error contains a string shortly explaining the error.
---- This type might be extended in the future to distinguish
---- further error situations.
+-- | The (abstract) type of error values.
+-- Currently, it distinguishes between general I/O errors,
+-- user-generated errors (see 'userError'), failures and non-determinism
+-- errors during I/O computations. These errors can be caught by 'catch'.
+-- Each error contains a string shortly explaining the error.
+-- This type might be extended in the future to distinguish
+-- further error situations.
 data IOError
   = IOError String     -- normal IO error
   | UserError String   -- user-specified error
@@ -2273,12 +2275,12 @@ instance Show IOError where
   show (FailError   s) = "fail error: " ++ s
   show (NondetError s) = "nondet error: " ++ s
 
---- A user error value is created by providing a description of the
---- error situation as a string.
+-- | A user error value is created by providing a description of the
+-- error situation as a string.
 userError :: String -> IOError
 userError = UserError
 
---- Raises an I/O exception with a given error value.
+-- | Raises an I/O exception with a given error value.
 ioError :: IOError -> IO _
 #ifdef __KICS2__
 ioError err = prim_ioError $## err
@@ -2289,36 +2291,36 @@ prim_ioError external
 ioError err = error (show err)
 #endif
 
---- Catches a possible error or failure during the execution of an
---- I/O action. `catch act errfun` executes the I/O action `act`.
---- If an exception or failure occurs during this I/O action, the
---- function `errfun` is applied to the error value.
+-- | Catches a possible error or failure during the execution of an
+-- I/O action. `catch act errfun` executes the I/O action `act`.
+-- If an exception or failure occurs during this I/O action, the
+-- function `errfun` is applied to the error value.
 catch :: IO a -> (IOError -> IO a) -> IO a
 catch external
 
---- The type synonym for constraints. It is included for backward
---- compatibility and should be no longer used.
+-- | The type synonym for constraints. It is included for backward
+-- compatibility and should be no longer used.
 type Success = Bool
 
---- The always satisfiable constraint. It is included for backward
---- compatibility and should be no longer used.
+-- | The always satisfiable constraint. It is included for backward
+-- compatibility and should be no longer used.
 success :: Success
 success = True
 
---- Enforce a Boolean condition to be true.
---- The computation fails if the argument evaluates to `False`.
+-- | Enforce a Boolean condition to be true.
+-- The computation fails if the argument evaluates to `False`.
 solve :: Bool -> Bool
 solve True = True
 
---- Solves a constraint as an I/O action.
---- Note: The constraint should be always solvable in a deterministic way.
+-- | Solves a constraint as an I/O action.
+-- Note: The constraint should be always solvable in a deterministic way.
 doSolve :: Bool -> IO ()
 doSolve b | b = return ()
 
---- The equational constraint.
---- `(e1 =:= e2)` is satisfiable if both sides `e1` and `e2` can be
---- reduced to a unifiable data term (i.e., a term without defined
---- function symbols).
+-- | The equational constraint.
+-- `(e1 =:= e2)` is satisfiable if both sides `e1` and `e2` can be
+-- reduced to a unifiable data term (i.e., a term without defined
+-- function symbols).
 #ifdef __PAKCS__
 (=:=) :: Data a => a -> a -> Bool
 x =:= y = constrEq x y
@@ -2330,9 +2332,9 @@ x =:= y = constrEq x y
 (=:=) external
 #endif
 
---- Internal operation to implement equational constraints.
---- It is used by the strict equality optimizer but should not be used
---- in regular programs.
+-- | Internal operation to implement equational constraints.
+-- It is used by the strict equality optimizer but should not be used
+-- in regular programs.
 constrEq :: a -> a -> Bool
 #ifdef __PAKCS__
 constrEq external
@@ -2342,16 +2344,16 @@ constrEq external
 constrEq x y = x =:= y
 #endif
 
---- Non-strict equational constraint.
---- This operation is not intended to be used in source programs
---- but it is used to implement
---- [functional patterns](https://doi.org/10.1007/11680093_2).
---- Conceptually, `(e1 =:<= e2)` is satisfiable if `e1` can be evaluated
---- to some pattern (data term) that matches `e2`, i.e., `e2` is
---- an instance of this pattern.
---- The `Data` context is required since the resulting pattern might be
---- non-linear so that it abbreviates some further equational constraints,
---- see [Section 7](https://doi.org/10.1007/978-3-030-46714-2_15).
+-- | Non-strict equational constraint.
+-- This operation is not intended to be used in source programs
+-- but it is used to implement
+-- [functional patterns](https://doi.org/10.1007/11680093_2).
+-- Conceptually, `(e1 =:<= e2)` is satisfiable if `e1` can be evaluated
+-- to some pattern (data term) that matches `e2`, i.e., `e2` is
+-- an instance of this pattern.
+-- The `Data` context is required since the resulting pattern might be
+-- non-linear so that it abbreviates some further equational constraints,
+-- see [Section 7](https://doi.org/10.1007/978-3-030-46714-2_15).
 #ifdef __PAKCS__
 (=:<=) :: Data a => a -> a -> Bool
 x =:<= y = nonstrictEq x y
@@ -2371,10 +2373,10 @@ nonstrictEq :: a -> a -> Bool
 nonstrictEq external
 #endif
 
---- Non-strict equational constraint for linear functional patterns.
---- Thus, it must be ensured that the first argument is always
---- (after evalutation by narrowing) a linear pattern.
---- Experimental and only supported in PAKCS.
+-- | Non-strict equational constraint for linear functional patterns.
+-- Thus, it must be ensured that the first argument is always
+-- (after evalutation by narrowing) a linear pattern.
+-- Experimental and only supported in PAKCS.
 (=:<<=) :: Data a => a -> a -> Bool
 #ifdef __PAKCS__
 x =:<<= y = unifEqLinear x y
@@ -2383,46 +2385,46 @@ x =:<<= y = unifEqLinear x y
 unifEqLinear :: a -> a -> Bool
 unifEqLinear external
 
---- Internal operation used by PAKCS to implement `=:<=`.
+-- | Internal operation used by PAKCS to implement `=:<=`.
 ifVar :: _ -> a -> a -> a
 ifVar external
 #else
 _ =:<<= _ = error "Prelude.=:<<= not supported!"
 #endif
 
---- Concurrent conjunction.
---- An expression like `(c1 & c2)` is evaluated by evaluating
---- the `c1` and `c2` in a concurrent manner.
+-- | Concurrent conjunction.
+-- An expression like `(c1 & c2)` is evaluated by evaluating
+-- the `c1` and `c2` in a concurrent manner.
 (&) :: Bool -> Bool -> Bool
 (&) external
 
---- Conditional expression.
---- An expression like `(c &> e)` is evaluated by evaluating the first
---- argument to `True` and then evaluating `e`.
---- The expression has no value if the condition does not evaluate to `True`.
+-- | Conditional expression.
+-- An expression like `(c &> e)` is evaluated by evaluating the first
+-- argument to `True` and then evaluating `e`.
+-- The expression has no value if the condition does not evaluate to `True`.
 (&>) :: Bool -> a -> a
 True &> x = x
 
---- Non-deterministic choice _par excellence_.
---- The value of `x ? y` is either `x` or `y`.
+-- | Non-deterministic choice _par excellence_.
+-- The value of `x ? y` is either `x` or `y`.
 (?) :: a -> a -> a
 x ? _ = x
 _ ? y = y
 
---- Returns non-deterministically any element of a list.
+-- | Returns non-deterministically any element of a list.
 anyOf :: [a] -> a
 anyOf xs = foldr1 (?) xs
 
---- Evaluates to a fresh free variable.
+-- | Evaluates to a fresh free variable.
 unknown :: Data a => a
 unknown = let x free in x
 
---- A non-reducible polymorphic function.
---- It is useful to express a failure in a search branch of the execution.
+-- | A non-reducible polymorphic function.
+-- It is useful to express a failure in a search branch of the execution.
 failed :: _
 failed external
 
---- Aborts the execution with an error message.
+-- | Aborts the execution with an error message.
 error :: String -> _
 error x = prim_error $## x
 
@@ -2440,12 +2442,12 @@ cond external
 ----------------------------------------------------------------
 -- Extras used by specific Curry tools.
 
---- Identity type synonym used to mark deterministic operations.
---- Used by the Curry preprocessor.
+-- | Identity type synonym used to mark deterministic operations.
+-- Used by the Curry preprocessor.
 type DET a = a
 
---- Identity function used by the partial evaluator
---- to mark expressions to be partially evaluated.
+-- | Identity function used by the partial evaluator
+-- to mark expressions to be partially evaluated.
 PEVAL   :: a -> a
 PEVAL x = x
 
