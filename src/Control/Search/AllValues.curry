@@ -24,7 +24,7 @@ import Control.Search.Unsafe
 --   In PAKCS, the evaluation suspends as long as the expression
 --   contains unbound variables or the computed
 --   value contains unbound variables.
-getAllValues :: a -> IO [a]
+getAllValues :: Data a => a -> IO [a]
 getAllValues e = return (allValues e)
 
 -- | Gets one value of an expression. Returns `Nothing` if the search space
@@ -34,7 +34,7 @@ getAllValues e = return (allValues e)
 --   In PAKCS, the evaluation suspends as long as the expression
 --   contains unbound variables or the computed
 --   value contains unbound variables.
-getOneValue :: a -> IO (Maybe a)
+getOneValue :: Data a => a -> IO (Maybe a)
 getOneValue x = return (oneValue x)
 
 -- | Returns a list of values that do not satisfy a given constraint.
@@ -43,7 +43,8 @@ getOneValue x = return (oneValue x)
 --     getAllFailures ([] ? [1] ? [2]) (\xs -> head xs =:= 1)
 --
 -- evaluates to `[[], [2]]`.
-getAllFailures :: a           -- ^ an expression ´e´ (e.g., a generator
+getAllFailures ::  Data a
+               => a           -- ^ an expression ´e´ (e.g., a generator
                               --   evaluable to various values)
                -> (a -> Bool) -- ^ a constraint ´c´ that should not be satisfied
                -> IO [a]      -- ^ list of all values of `e`
@@ -54,7 +55,7 @@ getAllFailures generator test = do
   return $ concat failures
 
 -- (naf c x) returns [x] if (c x) fails, and [] otherwise.
-naf :: (a -> Bool) -> a -> IO [a]
+naf ::  Data a => (a -> Bool) -> a -> IO [a]
 naf c x = getOneValue (c x) >>= return . maybe [x] (const [])
 
 ------------------------------------------------------------------------------

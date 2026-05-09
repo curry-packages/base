@@ -41,7 +41,7 @@ data SearchTree a = Value a
 type Strategy a = SearchTree a -> ValueSequence a
 
 --- Returns the search tree for some expression.
-getSearchTree :: a -> IO (SearchTree a)
+getSearchTree :: Data a => a -> IO (SearchTree a)
 getSearchTree x = return (someSearchTree x)
 
 --- Internal operation to return the search tree for some expression.
@@ -52,7 +52,7 @@ getSearchTree x = return (someSearchTree x)
 --- Note that in PAKCS the search tree is just a degenerated tree
 --- representing all values of the argument expression
 --- and it is computed at once (i.e., not lazily!).
-someSearchTree :: a -> SearchTree a
+someSearchTree :: Data a => a -> SearchTree a
 #ifdef __PAKCS__
 someSearchTree = list2st . allValues
  where list2st []       = Fail 0
@@ -63,7 +63,7 @@ someSearchTree external
 #endif
 
 --- Returns True iff the argument is defined, i.e., has a value.
-isDefined :: a -> Bool
+isDefined :: Data a => a -> Bool
 isDefined x = hasValue (someSearchTree x)
  where hasValue y = case y of Value _  -> True
                               Fail _   -> False
@@ -266,7 +266,7 @@ allValuesDiag = allValuesWith diagStrategy
 --- and collect all values, e.g., 'dfsStrategy' or 'bfsStrategy'.
 --- Conceptually, all values are computed on a copy of the expression,
 --- i.e., the evaluation of the expression does not share any results.
-getAllValuesWith :: Strategy a -> a -> IO [a]
+getAllValuesWith :: Data a => Strategy a -> a -> IO [a]
 getAllValuesWith strategy exp = do
   t <- getSearchTree exp
   return (vsToList (strategy t))
@@ -277,7 +277,7 @@ getAllValuesWith strategy exp = do
 --- and collect all values, e.g., 'dfsStrategy' or 'bfsStrategy'.
 --- Conceptually, all printed values are computed on a copy of the expression,
 --- i.e., the evaluation of the expression does not share any results.
-printAllValuesWith :: Show a => Strategy a -> a -> IO ()
+printAllValuesWith :: (Show a, Data a) => Strategy a -> a -> IO ()
 printAllValuesWith strategy exp =
   getAllValuesWith strategy exp >>= mapM_ print
 
@@ -289,7 +289,7 @@ printAllValuesWith strategy exp =
 --- and collect all values, e.g., 'dfsStrategy' or 'bfsStrategy'.
 --- Conceptually, all printed values are computed on a copy of the expression,
 --- i.e., the evaluation of the expression does not share any results.
-printValuesWith :: Show a => Strategy a -> a -> IO ()
+printValuesWith :: (Show a, Data a) => Strategy a -> a -> IO ()
 printValuesWith strategy exp =
   getAllValuesWith strategy exp >>= printValues
  where
@@ -307,7 +307,7 @@ printValuesWith strategy exp =
 --- the computed value depends on the ordering of the program rules.
 --- Thus, this operation should be used only if the expression
 --- has a single value. It fails if the expression has no value.
-someValue :: a -> a
+someValue :: Data a => a -> a
 someValue = someValueWith bfsStrategy
 
 --- Returns some value for an expression w.r.t. a search strategy.
@@ -318,7 +318,7 @@ someValue = someValueWith bfsStrategy
 --- the computed value depends on the ordering of the program rules.
 --- Thus, this operation should be used only if the expression
 --- has a single value. It fails if the expression has no value.
-someValueWith :: Strategy a -> a -> a
+someValueWith :: Data a => Strategy a -> a -> a
 someValueWith strategy x = head (vsToList (strategy (someSearchTree x)))
 
 ------------------------------------------------------------------------------

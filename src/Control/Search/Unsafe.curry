@@ -39,7 +39,7 @@ import qualified Control.Search.SearchTree as ST
 ---
 --- Note that this operation is not purely declarative since the ordering
 --- of the computed values depends on the ordering of the program rules.
-allValues :: a -> [a]
+allValues :: Data a => a -> [a]
 #ifdef __KICS2__
 allValues e = ST.allValuesDFS (ST.someSearchTree e)
 #else
@@ -58,7 +58,7 @@ allValues external
 --- the computed value depends on the ordering of the program rules.
 --- Thus, this operation should be used only if the expression
 --- has a single value.
-oneValue :: a -> Maybe a
+oneValue :: Data a => a -> Maybe a
 #ifdef __KICS2__
 oneValue x =
   let vals = ST.allValuesWith ST.dfsStrategy (ST.someSearchTree x)
@@ -79,14 +79,14 @@ oneValue external
 --- the computed value depends on the ordering of the program rules.
 --- Thus, this operation should be used only if the expression
 --- has a single value.
-someValue :: a -> a
+someValue :: Data a => a -> a
 someValue x = case oneValue x of Just v  -> v
                                  Nothing -> failed
 
 --- Does the computation of the argument to a value fail?
 --- Conceptually, the argument is evaluated on a copy, i.e.,
 --- even if the computation does not fail, it has not been evaluated.
-isFail :: a -> Bool
+isFail :: Data a => a -> Bool
 isFail x = case oneValue x of Nothing -> True
                               Just _  -> False
 
@@ -96,7 +96,7 @@ isFail x = case oneValue x of Nothing -> True
 --- until all "outside" variables are bound to values,
 --- but it returns all values computable by term rewriting
 --- and ignores all computations that requires bindings for outside variables.
-rewriteAll :: a -> [a]
+rewriteAll :: Data a => a -> [a]
 #ifdef __PAKCS__
 rewriteAll external
 #else
@@ -105,7 +105,7 @@ rewriteAll _ = error "Control.Search.Unsafe.rewriteAll: not yet implemented"
 
 --- Similarly to 'rewriteAll' but returns only some value computable
 --- by term rewriting. Returns `Nothing` if there is no such value.
-rewriteSome :: a -> Maybe a
+rewriteSome :: Data a => a -> Maybe a
 #ifdef __PAKCS__
 rewriteSome external
 #else

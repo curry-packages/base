@@ -4,8 +4,8 @@
 --   and methods defined in this module are always
 --   available in any Curry program.
 --------------------------------------------------------------------------------
-{-# LANGUAGE CPP #-}
-{-# OPTIONS_FRONTEND -Wno-incomplete-patterns -Wno-overlapping #-}
+{-# LANGUAGE CPP, DeterminismSignatures #-}
+{-# OPTIONS_FRONTEND -Wno-incomplete-patterns -Wno-overlapping -Wno-external-det-sig #-}
 {-# OPTIONS_FRONTEND --case-mode=free #-}
 
 module Prelude
@@ -135,7 +135,9 @@ data Ordering = LT | EQ | GT
 --   since the latter defines only an equivalence relation rather
 --   than syntactic equality.
 class Data a where
+  (===)  :? Det -> Det -> Det
   (===)  :: a -> a -> Bool
+  aValue :? Any
   aValue :: a
 
 -- | The negation of strict equality.
@@ -234,6 +236,7 @@ aValueChar = foldr1 (?) [minBound .. maxBound]
 -- on values. For basic data types, the instances are defined as
 -- syntactic equality of values.
 class Eq a where
+  (==), (/=) :? Det -> Det -> Det
   (==), (/=) :: a -> a -> Bool
 
   x == y = not (x /= y)
@@ -342,8 +345,11 @@ eqString (x:xs) (y:ys) = eqChar x y && eqString xs ys
 -- with respect to a total ordering.
 -- A minimal instance definition for some type must define `<=` or `compare`.
 class Eq a => Ord a where
+  compare :? Det -> Det -> Det
   compare :: a -> a -> Ordering
+  (<), (>), (<=), (>=) :? Det -> Det -> Det
   (<), (>), (<=), (>=) :: a -> a -> Bool
+  min, max :? Det -> Det -> Det
   min, max :: a -> a -> a
 
   compare x y | x == y = EQ
@@ -462,8 +468,11 @@ type ShowS = String -> String
 -- | The class `Show` contains methods to transform values into
 -- a string representation.
 class Show a where
+  show :? Det -> Det
   show :: a -> String
+  showsPrec :? Det -> Det -> Det -> Det
   showsPrec :: Int -> a -> ShowS
+  showList :? Det -> Det -> Det
   showList :: [a] -> ShowS
 
   show x = shows x ""
@@ -523,6 +532,7 @@ showChar :: Char -> ShowS
 showChar = (:)
 
 -- | Converts a string to a show function that prepends the string.
+showString :? Det -> Det -> Det
 showString :: String -> ShowS
 showString str s = foldr showChar s str
 
@@ -589,7 +599,9 @@ type ReadS a = String -> [(a, String)]
 -- | The class `Read` contains method to parse strings to return values
 -- corresponding to the textual representation as produced by `show`.
 class Read a where
+  readsPrec :? Det -> Det -> Det
   readsPrec :: Int -> ReadS a
+  readList :? Det -> Det
   readList :: ReadS [a]
 
   readList = readListDefault
@@ -820,6 +832,7 @@ prim_readFloatLiteral external
 
 -- | Instances of the class `Bounded` are types with minmal and maximal values.
 class Bounded a where
+  minBound, maxBound :? Det
   minBound, maxBound :: a
 
 instance Bounded Char where
@@ -860,13 +873,19 @@ instance Bounded Ordering where
 -- If a type is an instance of `Enum`, one can use the standard
 -- notation for arithmetic sequences to enumerate list of values.
 class Enum a where
-  succ :: a -> a
-  pred :: a -> a
+  succ, pred :? Det -> Det
+  succ, pred :: a -> a
+  toEnum :? Det -> Det
   toEnum :: Int -> a
+  fromEnum :? Det -> Det
   fromEnum :: a -> Int
+  enumFrom :? Det -> Det
   enumFrom :: a -> [a]
+  enumFromThen :? Det -> Det -> Det
   enumFromThen :: a -> a -> [a]
+  enumFromTo :? Det -> Det -> Det
   enumFromTo :: a -> a -> [a]
+  enumFromThenTo :? Det -> Det -> Det -> Det
   enumFromThenTo :: a -> a -> a -> [a]
 
   succ = toEnum . (+ 1) . fromEnum
@@ -936,10 +955,15 @@ instance Enum Ordering where
 -- For type wich are instances of `Num`, one can write values
 -- as integers which are converted by an implicit `fromInt` application.
 class Num a where
+  (+), (-), (*) :? Det -> Det -> Det
   (+), (-), (*) :: a -> a -> a
+  negate :? Det -> Det
   negate :: a -> a
+  abs :? Det -> Det
   abs :: a -> a
+  signum :? Det -> Det
   signum :: a -> a
+  fromInt :? Det -> Det
   fromInt :: Int -> a
 
   x - y = x + negate y
@@ -1067,8 +1091,11 @@ prim_intToFloat external
 
 -- | The class `Fractional` defines numbers with a division operation.
 class Num a => Fractional a where
+  (/) :? Det -> Det -> Det
   (/) :: a -> a -> a
+  recip :? Det -> Det
   recip :: a -> a
+  fromFloat :? Det -> Det
   fromFloat :: Float -> a
 
   recip x = 1.0 / x
@@ -1091,6 +1118,7 @@ prim_divFloat external
 
 -- | The class of real numbers which can be mapped to floats.
 class (Num a, Ord a) => Real a where
+  toFloat :? Det -> Det
   toFloat :: a -> Float
 
 instance Real Int where
@@ -1101,10 +1129,11 @@ instance Real Float where
 
 -- | The class of `Integral` numbers supports integer division operators.
 class (Real a, Enum a) => Integral a where
-  div, mod :: a -> a -> a
-  quot, rem :: a -> a -> a
-  divMod :: a -> a -> (a, a)
-  quotRem :: a -> a -> (a, a)
+  div, mod, quot, rem :? Det -> Det -> Det
+  div, mod, quot, rem :: a -> a -> a
+  divMod, quotRem :? Det -> Det -> Det
+  divMod, quotRem :: a -> a -> (a, a)
+  toInt :? Det -> Det
   toInt :: a -> Int
 
   n `div` d = q
@@ -1196,11 +1225,10 @@ prim_remInt external
 -- | Instances of the class `RealFrac` supports extracting components
 -- of `Fractional` values.
 class (Real a, Fractional a) => RealFrac a where
+  properFraction :? Det -> Det
   properFraction :: Integral b => a -> (b, a)
-  truncate :: Integral b => a -> b
-  round :: Integral b => a -> b
-  ceiling :: Integral b => a -> b
-  floor :: Integral b => a -> b
+  truncate, round, ceiling, floor :? Det -> Det
+  truncate, round, ceiling, floor :: Integral b => a -> b
 
   truncate x = m
    where (m, _) = properFraction x
@@ -1250,12 +1278,19 @@ prim_roundFloat external
 -- | The class `Floating` defines `Fractional`s with
 -- trigonometric and hyperbolic and related functions.
 class Fractional a => Floating a where
+  pi :? Det
   pi :: a
+  exp, log, sqrt :? Det -> Det
   exp, log, sqrt :: a -> a
+  (**), logBase :? Det -> Det -> Det
   (**), logBase :: a -> a -> a
+  sin, cos, tan :? Det -> Det
   sin, cos, tan :: a -> a
+  asin, acos, atan :? Det -> Det
   asin, acos, atan :: a -> a
+  sinh, cosh, tanh :? Det -> Det
   sinh, cosh, tanh :: a -> a
+  asinh, acosh, atanh :? Det -> Det
   asinh, acosh, atanh :: a -> a
 
   sqrt x = x ** 0.5
@@ -1464,8 +1499,11 @@ x0 ^ y0 | y0 < 0    = error "Negative exponent"
 -- | The class `Monoid` defines types with an associative
 -- binary operation `mappend` having an identity `mempty`.
 class Monoid a where
+  mempty  :? Det
   mempty  :: a
+  mappend :? Det -> Det -> Det
   mappend :: a -> a -> a
+  mconcat :? Det -> Det
   mconcat :: [a] -> a
 
   mconcat = foldr mappend mempty
@@ -1502,6 +1540,9 @@ instance Monoid [a] where
   mconcat xss = [x | xs <- xss, x <- xs]
 
 instance Monoid b => Monoid (a -> b) where
+  -- mempty :? Det
+
+  -- mempty :? a -> Det
   mempty _ = mempty
   mappend f g x = f x `mappend` g x
 
@@ -1517,7 +1558,9 @@ instance Monoid Ordering where
 -- which applies a function of type `(a -> b)` to all values contained
 -- in a structure of type `f a` yielding a structure of type `f b`.
 class Functor f where
+  fmap :? Det -> Det -> Det
   fmap :: (a -> b) -> f a -> f b
+  (<$) :? Det -> Det -> Det
   (<$) :: a -> f b -> f a
 
   (<$) = fmap . const
@@ -1539,10 +1582,13 @@ instance Functor ((->) r) where
 -- with application operators to apply functions and argument
 -- contained in structure and combining their results back into a structure.
 class Functor f => Applicative f where
+  pure :? Det -> Det
   pure :: a -> f a
+  (<*>), (*>), (<*) :? Det -> Det -> Det
   (<*>) :: f (a -> b) -> f a -> f b
   (*>) :: f a -> f b -> f b
   (<*) :: f a -> f b -> f a
+  liftA2 :? (Det -> Det -> Det) -> Det -> Det -> Det
   liftA2 :: (a -> b -> c) -> f a -> f b -> f c
 
   (<*>) = liftA2 id
@@ -1561,7 +1607,6 @@ instance Applicative ((->) a) where
   (<*>) f g x = f x (g x)
   liftA2 q f g x = q (f x) (g x)
 
-
 -- | A monoid on applicative functors.
 --
 -- If defined, 'some' and 'many' should be the least solutions
@@ -1572,11 +1617,14 @@ instance Applicative ((->) a) where
 -- * `many v = some v <|> pure []`
 class Applicative f => Alternative f where
     -- | The identity of '<|>'
+    empty :? Det
     empty :: f a
     -- | An associative binary operation
+    (<|>) :? Det -> Det -> Det
     (<|>) :: f a -> f a -> f a
 
     -- | One or more.
+    some :? Det -> Det
     some :: f a -> f [a]
     some v = some_ v
       where
@@ -1584,6 +1632,7 @@ class Applicative f => Alternative f where
         some_ x = (:) <$> x <*> many_ x
 
     -- | Zero or more.
+    many :? Det -> Det
     many :: f a -> f [a]
     many v = many_ v
       where
@@ -1598,8 +1647,11 @@ instance Alternative [] where
 -- of computations.
 -- For instances of `Monad`, the standard `do` notation can be used.
 class Applicative m => Monad m where
+  (>>=) :? Det -> (Det -> Det) -> Det
   (>>=) :: m a -> (a -> m b) -> m b
+  (>>) :? Det -> Det -> Det
   (>>) :: m a -> m b -> m b
+  return :? Det -> Det
   return :: a -> m a
 
   return = pure
@@ -1614,6 +1666,7 @@ instance Monad ((->) r) where
 
 -- | The class `MonadFail` adds a `fail` operation to a monadic structure.
 class Monad m => MonadFail m where
+  fail :? Det -> Det
   fail :: String -> m a
 
 instance MonadFail [] where
