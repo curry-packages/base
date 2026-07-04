@@ -323,7 +323,7 @@ someValueWith :: Strategy a -> a -> a
 someValueWith strategy x = head (vsToList (strategy (someSearchTree x)))
 
 ------------------------------------------------------------------------------
--- | The subsequent part defines a data structure for sequence of values
+-- The subsequent part defines a data structure for sequence of values
 -- which is used in the implementation of search trees.
 -- Using sequence of values (rather than standard lists of values)
 -- is necessary to get the behavior of set functions
@@ -340,9 +340,10 @@ someValueWith strategy x = head (vsToList (strategy (someSearchTree x)))
 -- In particular, the intended semantics of failures is not provided
 -- in other implementations.
 
--- A value sequence is an abstract sequence of values.
--- It also contains failure elements in order to implement the semantics
--- of set functions w.r.t. failures in the intended manner (only in KiCS2).
+-- | A value sequence is an abstract sequence of values.
+--   It also contains failure elements in order to implement the semantics
+--   of set functions w.r.t. failures in the intended manner
+--   (this is implemented only in KiCS2).
 #ifdef __KICS2__
 external data ValueSequence _ -- external
 #else
