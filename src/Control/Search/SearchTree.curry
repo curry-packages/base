@@ -5,7 +5,7 @@
 --- [JFLP'04 paper](http://danae.uni-muenster.de/lehre/kuchen/JFLP/articles/2004/S04-01/A2004-06/JFLP-A2004-06.pdf)
 ---
 --- @author  Michael Hanus, Bjoern Peemoeller, Fabian Reck
---- @version November 2024
+--- @version July 2026
 ------------------------------------------------------------------------------
 {-# LANGUAGE CPP #-}
 
@@ -24,7 +24,7 @@ module Control.Search.SearchTree
 import System.IO       ( hFlush, stdout )
 import Data.List       ( diagonal )
 
-#ifdef __PAKCS__
+#ifndef __KICS2__
 import Control.Search.Unsafe ( allValues )
 #endif
 
@@ -53,13 +53,13 @@ getSearchTree x = return (someSearchTree x)
 --- representing all values of the argument expression
 --- and it is computed at once (i.e., not lazily!).
 someSearchTree :: a -> SearchTree a
-#ifdef __PAKCS__
+#ifdef __KICS2__
+someSearchTree external
+#else
 someSearchTree = list2st . allValues
  where list2st []       = Fail 0
        list2st [x]      = Value x
        list2st (x:y:ys) = Or (Value x) (list2st (y:ys))
-#else
-someSearchTree external
 #endif
 
 --- Returns True iff the argument is defined, i.e., has a value.
@@ -333,61 +333,62 @@ someValueWith strategy x = head (vsToList (strategy (someSearchTree x)))
 --- > Proc. 15th International Conference on Principles and Practice
 --- > of Declarative Programming (PPDP'13), pp. 49-60, ACM Press, 2013
 ---
---- Note that the implementation for PAKCS is simplified in order to provide
+--- Note that this is implemented only in KiCS2.
+--- In other Curry implementations, it is simplified in order to provide
 --- some functionality used by other modules.
 --- In particular, the intended semantics of failures is not provided
---- in the PAKCS implementation.
+--- in other implementations.
 
 --- A value sequence is an abstract sequence of values.
 --- It also contains failure elements in order to implement the semantics
 --- of set functions w.r.t. failures in the intended manner (only in KiCS2).
-#ifdef __PAKCS__
-data ValueSequence a = EmptyVS | ConsVS a (ValueSequence a)
-#else
+#ifdef __KICS2__
 external data ValueSequence _ -- external
+#else
+data ValueSequence a = EmptyVS | ConsVS a (ValueSequence a)
 #endif
 
 --- An empty sequence of values.
 emptyVS :: ValueSequence a
-#ifdef __PAKCS__
-emptyVS = EmptyVS
-#else
+#ifdef __KICS2__
 emptyVS external
+#else
+emptyVS = EmptyVS
 #endif
 
 --- Adds a value to a sequence of values.
 addVS :: a -> ValueSequence a -> ValueSequence a
-#ifdef __PAKCS__
-addVS = ConsVS
-#else
+#ifdef __KICS2__
 addVS external
+#else
+addVS = ConsVS
 #endif
 
 --- Adds a failure to a sequence of values.
 --- The argument is the encapsulation level of the failure.
 failVS :: Int -> ValueSequence a
-#ifdef __PAKCS__
-failVS _ = EmptyVS -- cannot be implemented in PAKCS!"
-#else
+#ifdef __KICS2__
 failVS external
+#else
+failVS _ = EmptyVS -- cannot be implemented in PAKCS!"
 #endif
 
 --- Concatenates two sequences of values.
 (|++|) :: ValueSequence a -> ValueSequence a -> ValueSequence a
-#ifdef __PAKCS__
+#ifdef __KICS2__
+(|++|) external
+#else
 xs |++| ys = case xs of EmptyVS     -> ys
                         ConsVS z zs -> ConsVS z (zs |++| ys)
-#else
-(|++|) external
 #endif
 
 --- Transforms a sequence of values into a list of values.
 vsToList :: ValueSequence a -> [a]
-#ifdef __PAKCS__
+#ifdef __KICS2__
+vsToList external
+#else
 vsToList EmptyVS       = []
 vsToList (ConsVS x xs) = x : vsToList xs
-#else
-vsToList external
 #endif
 
 ------------------------------------------------------------------------------
