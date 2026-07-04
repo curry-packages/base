@@ -1,11 +1,12 @@
 ------------------------------------------------------------------------------
---- This library defines a representation of a search space as
---- a tree and various search strategies on this tree.
---- This module implements **strong encapsulation** as discussed in the
---- [JFLP'04 paper](http://danae.uni-muenster.de/lehre/kuchen/JFLP/articles/2004/S04-01/A2004-06/JFLP-A2004-06.pdf)
----
---- @author  Michael Hanus, Bjoern Peemoeller, Fabian Reck
---- @version July 2026
+-- | Description: Representation of a search space as a tree
+--   Author     : Michael Hanus, Bjoern Peemoeller, Fabian Reck
+--   Version    : July 2026
+--
+-- This library defines a representation of a search space as
+-- a tree and various search strategies on this tree.
+-- This module implements **strong encapsulation** as discussed in the
+-- [JFLP'04 paper](http://danae.uni-muenster.de/lehre/kuchen/JFLP/articles/2004/S04-01/A2004-06/JFLP-A2004-06.pdf)
 ------------------------------------------------------------------------------
 {-# LANGUAGE CPP #-}
 
@@ -28,30 +29,30 @@ import Data.List       ( diagonal )
 import Control.Search.Unsafe ( allValues )
 #endif
 
---- A search tree is a value, a failure, or a choice between two search trees.
+-- | A search tree is a value, a failure, or a choice between two search trees.
 data SearchTree a = Value a
                   | Fail Int
                   | Or (SearchTree a) (SearchTree a)
 
---- A search strategy maps a search tree into some sequence of values.
---- Using the abtract type of sequence of values (rather than list of values)
---- enables the use of search strategies for encapsulated search
---- with search trees (strong encapsulation) as well as
---- with set functions (weak encapsulation).
+-- | A search strategy maps a search tree into some sequence of values.
+--   Using the abtract type of sequence of values (rather than list of values)
+--   enables the use of search strategies for encapsulated search
+--   with search trees (strong encapsulation) as well as
+--   with set functions (weak encapsulation).
 type Strategy a = SearchTree a -> ValueSequence a
 
---- Returns the search tree for some expression.
+-- | Returns the search tree for some expression.
 getSearchTree :: a -> IO (SearchTree a)
 getSearchTree x = return (someSearchTree x)
 
---- Internal operation to return the search tree for some expression.
---- Note that this operation is not purely declarative since
---- the ordering in the resulting search tree depends on the
---- ordering of the program rules.
----
---- Note that in PAKCS the search tree is just a degenerated tree
---- representing all values of the argument expression
---- and it is computed at once (i.e., not lazily!).
+-- | Internal operation to return the search tree for some expression.
+--   Note that this operation is not purely declarative since
+--   the ordering in the resulting search tree depends on the
+--   ordering of the program rules.
+--
+--   Note that in PAKCS the search tree is just a degenerated tree
+--   representing all values of the argument expression
+--   and it is computed at once (i.e., not lazily!).
 someSearchTree :: a -> SearchTree a
 #ifdef __KICS2__
 someSearchTree external
@@ -62,14 +63,14 @@ someSearchTree = list2st . allValues
        list2st (x:y:ys) = Or (Value x) (list2st (y:ys))
 #endif
 
---- Returns True iff the argument is defined, i.e., has a value.
+-- | Returns True iff the argument is defined, i.e., has a value.
 isDefined :: a -> Bool
 isDefined x = hasValue (someSearchTree x)
  where hasValue y = case y of Value _  -> True
                               Fail _   -> False
                               Or t1 t2 -> hasValue t1 || hasValue t2
 
---- Shows the search tree as an intended line structure
+-- | Shows the search tree as an intended line structure
 showSearchTree :: Show a => SearchTree a -> String
 showSearchTree st = showsST [] st ""
  where
@@ -108,7 +109,7 @@ showSearchTree st = showsST [] st ""
 --           tab j = showString $ replicate (3 * j) ' '
 
 
---- Returns the size (number of Value/Fail/Or nodes) of the search tree.
+-- | Returns the size (number of Value/Fail/Or nodes) of the search tree.
 searchTreeSize :: SearchTree _ -> (Int, Int, Int)
 searchTreeSize (Value _)  = (1, 0, 0)
 searchTreeSize (Fail _)   = (0, 1, 0)
@@ -116,8 +117,8 @@ searchTreeSize (Or t1 t2) = let (v1, f1, o1) = searchTreeSize t1
                                 (v2, f2, o2) = searchTreeSize t2
                              in (v1 + v2, f1 + f2, o1 + o2 + 1)
 
---- Limit the depth of a search tree. Branches which a depth larger
---- than the first argument are replace by `Fail (-1)`.
+-- | Limit the depth of a search tree. Branches which a depth larger
+--   than the first argument are replace by `Fail (-1)`.
 limitSearchTree :: Int -> SearchTree a -> SearchTree a
 limitSearchTree _ v@(Value _) = v
 limitSearchTree _ f@(Fail _)  = f
@@ -129,7 +130,7 @@ limitSearchTree n (Or t1 t2)  =
 -- Definition of various search strategies:
 ------------------------------------------------------------------------------
 
---- Depth-first search strategy.
+-- | Depth-first search strategy.
 dfsStrategy :: Strategy a
 dfsStrategy (Fail d)  = failVS d
 dfsStrategy (Value x) = addVS x emptyVS
@@ -138,7 +139,7 @@ dfsStrategy (Or x y)  = dfsStrategy x |++| dfsStrategy y
 
 ------------------------------------------------------------------------------
 
---- Breadth-first search strategy.
+-- | Breadth-first search strategy.
 bfsStrategy :: Strategy a
 bfsStrategy t = allBFS [t]
 
@@ -163,22 +164,22 @@ values (Or _ _  : ts) = values ts
 
 ------------------------------------------------------------------------------
 
---- Iterative-deepening search strategy.
+-- | Iterative-deepening search strategy.
 idsStrategy :: Strategy a
 idsStrategy t = idsStrategyWith defIDSDepth defIDSInc t
 
---- The default initial search depth for IDS
+-- | The default initial search depth for IDS
 defIDSDepth :: Int
 defIDSDepth = 100
 
---- The default increasing function for IDS
+-- | The default increasing function for IDS
 defIDSInc :: Int -> Int
 defIDSInc = (2*)
 
---- Parameterized iterative-deepening search strategy.
---- The first argument is the initial depth bound and
---- the second argument is a function to increase the depth in each
---- iteration.
+-- | Parameterized iterative-deepening search strategy.
+--   The first argument is the initial depth bound and
+--   the second argument is a function to increase the depth in each
+--   iteration.
 idsStrategyWith :: Int -> (Int -> Int) -> Strategy a
 idsStrategyWith initdepth incrdepth st =
   iterIDS initdepth (collectInBounds 0 initdepth st)
@@ -219,7 +220,7 @@ concA (FCons d xs) ys = FCons d (concA xs ys)
 -- Diagonalization search according to
 -- J. Christiansen, S Fischer: EasyCheck - Test Data for Free (FLOPS 2008)
 
---- Diagonalization search strategy.
+-- | Diagonalization search strategy.
 diagStrategy :: Strategy a
 diagStrategy st = values (diagonal (levels [st]))
 
@@ -232,63 +233,63 @@ levels st | null st   = []
 -- Operations to map search trees into list of values.
 ------------------------------------------------------------------------------
 
---- Return all values in a search tree via some given search strategy.
+-- | Return all values in a search tree via some given search strategy.
 allValuesWith :: Strategy a -> SearchTree a -> [a]
 allValuesWith strategy searchtree = vsToList (strategy searchtree)
 
---- Return all values in a search tree via depth-first search.
+-- | Return all values in a search tree via depth-first search.
 allValuesDFS :: SearchTree a -> [a]
 allValuesDFS = allValuesWith dfsStrategy
 
---- Return all values in a search tree via breadth-first search.
+-- | Return all values in a search tree via breadth-first search.
 allValuesBFS :: SearchTree a -> [a]
 allValuesBFS = allValuesWith bfsStrategy
 
---- Return all values in a search tree via iterative-deepening search.
+-- | Return all values in a search tree via iterative-deepening search.
 allValuesIDS :: SearchTree a -> [a]
 allValuesIDS = allValuesIDSwith defIDSDepth defIDSInc
 
---- Return all values in a search tree via iterative-deepening search.
---- The first argument is the initial depth bound and
---- the second argument is a function to increase the depth in each
---- iteration.
+-- | Return all values in a search tree via iterative-deepening search.
+--   The first argument is the initial depth bound and
+--   the second argument is a function to increase the depth in each
+--   iteration.
 allValuesIDSwith :: Int -> (Int -> Int) -> SearchTree a -> [a]
 allValuesIDSwith initdepth incrdepth =
   allValuesWith (idsStrategyWith initdepth incrdepth)
 
---- Return all values in a search tree via diagonalization search strategy.
+-- | Return all values in a search tree via diagonalization search strategy.
 allValuesDiag :: SearchTree a -> [a]
 allValuesDiag = allValuesWith diagStrategy
 
 
---- Gets all values of an expression w.r.t. a search strategy.
---- A search strategy is an operation to traverse a search tree
---- and collect all values, e.g., 'dfsStrategy' or 'bfsStrategy'.
---- Conceptually, all values are computed on a copy of the expression,
---- i.e., the evaluation of the expression does not share any results.
+-- | Gets all values of an expression w.r.t. a search strategy.
+--   A search strategy is an operation to traverse a search tree
+--   and collect all values, e.g., 'dfsStrategy' or 'bfsStrategy'.
+--   Conceptually, all values are computed on a copy of the expression,
+--   i.e., the evaluation of the expression does not share any results.
 getAllValuesWith :: Strategy a -> a -> IO [a]
 getAllValuesWith strategy exp = do
   t <- getSearchTree exp
   return (vsToList (strategy t))
 
 
---- Prints all values of an expression w.r.t. a search strategy.
---- A search strategy is an operation to traverse a search tree
---- and collect all values, e.g., 'dfsStrategy' or 'bfsStrategy'.
---- Conceptually, all printed values are computed on a copy of the expression,
---- i.e., the evaluation of the expression does not share any results.
+-- | Prints all values of an expression w.r.t. a search strategy.
+--   A search strategy is an operation to traverse a search tree
+--   and collect all values, e.g., 'dfsStrategy' or 'bfsStrategy'.
+--   Conceptually, all printed values are computed on a copy of the expression,
+--   i.e., the evaluation of the expression does not share any results.
 printAllValuesWith :: Show a => Strategy a -> a -> IO ()
 printAllValuesWith strategy exp =
   getAllValuesWith strategy exp >>= mapM_ print
 
 
---- Prints the values of an expression w.r.t. a search strategy
---- on demand by the user. Thus, the user must type <ENTER> before
---- another value is computed and printed.
---- A search strategy is an operation to traverse a search tree
---- and collect all values, e.g., 'dfsStrategy' or 'bfsStrategy'.
---- Conceptually, all printed values are computed on a copy of the expression,
---- i.e., the evaluation of the expression does not share any results.
+-- | Prints the values of an expression w.r.t. a search strategy
+--   on demand by the user. Thus, the user must type <ENTER> before
+--   another value is computed and printed.
+--   A search strategy is an operation to traverse a search tree
+--   and collect all values, e.g., 'dfsStrategy' or 'bfsStrategy'.
+--   Conceptually, all printed values are computed on a copy of the expression,
+--   i.e., the evaluation of the expression does not share any results.
 printValuesWith :: Show a => Strategy a -> a -> IO ()
 printValuesWith strategy exp =
   getAllValuesWith strategy exp >>= printValues
@@ -301,54 +302,54 @@ printValuesWith strategy exp =
    printValues xs
 
 ------------------------------------------------------------------------------
---- Returns some value for an expression.
----
---- Note that this operation is not purely declarative since
---- the computed value depends on the ordering of the program rules.
---- Thus, this operation should be used only if the expression
---- has a single value. It fails if the expression has no value.
+-- | Returns some value for an expression.
+--
+--   Note that this operation is not purely declarative since
+--   the computed value depends on the ordering of the program rules.
+--   Thus, this operation should be used only if the expression
+--   has a single value. It fails if the expression has no value.
 someValue :: a -> a
 someValue = someValueWith bfsStrategy
 
---- Returns some value for an expression w.r.t. a search strategy.
---- A search strategy is an operation to traverse a search tree
---- and collect all values, e.g., 'dfsStrategy' or 'bfsStrategy'.
----
---- Note that this operation is not purely declarative since
---- the computed value depends on the ordering of the program rules.
---- Thus, this operation should be used only if the expression
---- has a single value. It fails if the expression has no value.
+-- | Returns some value for an expression w.r.t. a search strategy.
+--   A search strategy is an operation to traverse a search tree
+--   and collect all values, e.g., 'dfsStrategy' or 'bfsStrategy'.
+--
+--   Note that this operation is not purely declarative since
+--   the computed value depends on the ordering of the program rules.
+--   Thus, this operation should be used only if the expression
+--   has a single value. It fails if the expression has no value.
 someValueWith :: Strategy a -> a -> a
 someValueWith strategy x = head (vsToList (strategy (someSearchTree x)))
 
 ------------------------------------------------------------------------------
---- The subsequent part defines a data structure for sequence of values
---- which is used in the implementation of search trees.
---- Using sequence of values (rather than standard lists of values)
---- is necessary to get the behavior of set functions
---- w.r.t. finite failures right, as described in the paper
----
---- > J. Christiansen, M. Hanus, F. Reck, D. Seidel:
---- > A Semantics for Weakly Encapsulated Search in Functional Logic Programs
---- > Proc. 15th International Conference on Principles and Practice
---- > of Declarative Programming (PPDP'13), pp. 49-60, ACM Press, 2013
----
---- Note that this is implemented only in KiCS2.
---- In other Curry implementations, it is simplified in order to provide
---- some functionality used by other modules.
---- In particular, the intended semantics of failures is not provided
---- in other implementations.
+-- | The subsequent part defines a data structure for sequence of values
+-- which is used in the implementation of search trees.
+-- Using sequence of values (rather than standard lists of values)
+-- is necessary to get the behavior of set functions
+-- w.r.t. finite failures right, as described in the paper
+--
+-- > J. Christiansen, M. Hanus, F. Reck, D. Seidel:
+-- > A Semantics for Weakly Encapsulated Search in Functional Logic Programs
+-- > Proc. 15th International Conference on Principles and Practice
+-- > of Declarative Programming (PPDP'13), pp. 49-60, ACM Press, 2013
+--
+-- Note that this is implemented only in KiCS2.
+-- In other Curry implementations, it is simplified in order to provide
+-- some functionality used by other modules.
+-- In particular, the intended semantics of failures is not provided
+-- in other implementations.
 
---- A value sequence is an abstract sequence of values.
---- It also contains failure elements in order to implement the semantics
---- of set functions w.r.t. failures in the intended manner (only in KiCS2).
+-- A value sequence is an abstract sequence of values.
+-- It also contains failure elements in order to implement the semantics
+-- of set functions w.r.t. failures in the intended manner (only in KiCS2).
 #ifdef __KICS2__
 external data ValueSequence _ -- external
 #else
 data ValueSequence a = EmptyVS | ConsVS a (ValueSequence a)
 #endif
 
---- An empty sequence of values.
+-- | An empty sequence of values.
 emptyVS :: ValueSequence a
 #ifdef __KICS2__
 emptyVS external
@@ -356,7 +357,7 @@ emptyVS external
 emptyVS = EmptyVS
 #endif
 
---- Adds a value to a sequence of values.
+-- | Adds a value to a sequence of values.
 addVS :: a -> ValueSequence a -> ValueSequence a
 #ifdef __KICS2__
 addVS external
@@ -364,8 +365,8 @@ addVS external
 addVS = ConsVS
 #endif
 
---- Adds a failure to a sequence of values.
---- The argument is the encapsulation level of the failure.
+-- | Adds a failure to a sequence of values.
+--   The argument is the encapsulation level of the failure.
 failVS :: Int -> ValueSequence a
 #ifdef __KICS2__
 failVS external
@@ -373,7 +374,7 @@ failVS external
 failVS _ = EmptyVS -- cannot be implemented in PAKCS!"
 #endif
 
---- Concatenates two sequences of values.
+-- | Concatenates two sequences of values.
 (|++|) :: ValueSequence a -> ValueSequence a -> ValueSequence a
 #ifdef __KICS2__
 (|++|) external
@@ -382,7 +383,7 @@ xs |++| ys = case xs of EmptyVS     -> ys
                         ConsVS z zs -> ConsVS z (zs |++| ys)
 #endif
 
---- Transforms a sequence of values into a list of values.
+-- | Transforms a sequence of values into a list of values.
 vsToList :: ValueSequence a -> [a]
 #ifdef __KICS2__
 vsToList external
