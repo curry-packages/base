@@ -2287,6 +2287,11 @@ ioError err = prim_ioError $## err
 
 prim_ioError :: IOError -> IO _
 prim_ioError external
+#elif defined(__KMCC__)
+ioError err = prim_ioError $## err
+
+prim_ioError :: IOError -> IO _
+prim_ioError external
 #else
 ioError err = error (show err)
 #endif

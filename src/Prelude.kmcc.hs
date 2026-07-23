@@ -12,6 +12,7 @@ import qualified Control.Monad as P
 import qualified Control.Monad.State as P
 import qualified Control.Exception as P
 import qualified Data.List as P
+import qualified Data.Maybe as P
 import qualified GHC.IO.Exception as P
 import qualified GHC.Magic as P
 import qualified GHC.Read as P
@@ -1466,6 +1467,10 @@ primuscoreappendFile_Det# = liftForeign2 P.appendFile
 primuscoreappendFile_ND# :: Curry (LiftedFunc (CList_ND Char_ND) (LiftedFunc (CList_ND Char_ND) (IO_ND CUnit_ND)))
 primuscoreappendFile_ND# = liftConvertIO2 primuscoreappendFile_Det#
 
+-- -----------------------------------------------------------------------------
+-- Primitive operations: Exception handling
+-- -----------------------------------------------------------------------------
+
 instance ForeignType IOError_Det where
   type Foreign IOError_Det = P.IOException
   fromForeign (P.IOError _ P.UserError _ s _ _) = UserError_Det (fromForeign s)
@@ -1489,7 +1494,11 @@ primuscoreioError_ND# = P.return (Func (\err -> do
   P.return (P.throw (toForeign e :: P.IOException))))
 
 catch_Det# :: IO_Det a -> (IOError_Det -> IO_Det a) -> IO_Det a
-catch_Det# io cont = P.catch io (cont . fromForeign)
+catch_Det# io cont = P.catches io
+  [P.Handler (cont . fromForeign), P.Handler (cont . fromForeign . fromSomeException)]
+
+fromSomeException :: P.SomeException -> P.IOError
+fromSomeException e = P.IOError P.Nothing P.OtherError "" ("IOERR_ " P.++ P.show e) P.Nothing P.Nothing
 
 catch_ND# :: Curry (LiftedFunc (IO_Det a) (LiftedFunc (LiftedFunc IOError_ND (IO_Det a)) (IO_Det a)))
 catch_ND# = P.return (Func (\ioND -> P.return (Func (\contND -> do
@@ -1497,15 +1506,11 @@ catch_ND# = P.return (Func (\ioND -> P.return (Func (\contND -> do
   Func cont <- BasicDefinitions.ensureOneResult contND
   let res = P.unsafePerformIO (P.unsafeInterleaveIO (P.try io))
   case res of
-    P.Left e -> cont (fromHaskell (fromForeign e))
+    P.Left e  -> cont (fromHaskell (fromForeign (P.fromMaybe (fromSomeException e) (P.fromException e))))
     P.Right x -> P.return (P.return x)))))
 
--- -----------------------------------------------------------------------------
--- Primitive operations: Exception handling
--- -----------------------------------------------------------------------------
-
 primuscoreerror_Det# :: CList_Det Char_Det -> a
-primuscoreerror_Det# xs = P.error (toForeign xs)
+primuscoreerror_Det# xs = P.throw (toForeign (UserError_Det xs))
 
 primuscoreerror_ND# :: Curry (LiftedFunc (CList_ND Char_ND) a)
 primuscoreerror_ND# = P.return $ Func $ toHaskell M.>=> \xs' -> primuscoreerror_Det# xs'
