@@ -3,6 +3,7 @@
 {-# LANGUAGE KindSignatures         #-}
 {-# LANGUAGE LambdaCase             #-}
 {-# LANGUAGE MagicHash              #-}
+{-# LANGUAGE ScopedTypeVariables    #-}
 {-# LANGUAGE TupleSections          #-}
 {-# LANGUAGE TypeFamilyDependencies #-}
 {-# LANGUAGE UndecidableInstances   #-}
@@ -1137,6 +1138,20 @@ eqcolonlteq_ND# = BasicDefinitions.returnFunc (\a1 -> BasicDefinitions.returnFun
 eqcoloneq_ND# :: Curryable a => Curry (LiftedFunc a (LiftedFunc a Bool_ND))
 eqcoloneq_ND# = BasicDefinitions.returnFunc (\a1 -> BasicDefinitions.returnFunc
   (BasicDefinitions.unify a1 P.>=> (BasicDefinitions.fromHaskell . fromForeign)))
+
+eqcolonlteq_Det# :: forall a a'. (Curryable a', HsEquivalent a' ~ a) => a -> a -> Bool_Det
+eqcolonlteq_Det# a1 a2 =
+  case evalCurry (eqcolonlteq_ND# P.>>= \(Func f) -> f (fromHaskell a1)
+                                  P.>>= \(Func f') -> f' (fromHaskell a2)) of
+    Single _ -> True_Det
+    _        -> False_Det
+
+eqcoloneq_Det# :: forall a a'. (Curryable a', HsEquivalent a' ~ a) => a -> a -> Bool_Det
+eqcoloneq_Det# a1 a2 =
+  case evalCurry (eqcoloneq_ND# P.>>= \(Func f) -> f (fromHaskell a1)
+                                P.>>= \(Func f') -> f' (fromHaskell a2)) of
+      Single _ -> True_Det
+      _        -> False_Det
 
 cond_Det# :: Bool_Det -> a -> a
 cond_Det# True_Det a = a
