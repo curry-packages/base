@@ -18,6 +18,7 @@ import qualified GHC.IO.Exception as P
 import qualified GHC.Magic as P
 import qualified GHC.Read as P
 import qualified System.IO.Unsafe as P
+import qualified Data.Set as Set
 import qualified Data.SBV as SBV
 import Control.DeepSeq (NFData)
 import BasicDefinitions
@@ -1137,7 +1138,7 @@ eqcolonlteq_ND# = BasicDefinitions.returnFunc (\a1 -> BasicDefinitions.returnFun
 
 eqcoloneq_ND# :: Curryable a => Curry (LiftedFunc a (LiftedFunc a Bool_ND))
 eqcoloneq_ND# = BasicDefinitions.returnFunc (\a1 -> BasicDefinitions.returnFunc
-  (BasicDefinitions.unify a1 P.>=> (BasicDefinitions.fromHaskell . fromForeign)))
+  (BasicDefinitions.unify Set.empty a1 P.>=> (BasicDefinitions.fromHaskell . fromForeign)))
 
 eqcolonlteq_Det# :: forall a a'. (Curryable a', HsEquivalent a' ~ a) => a -> a -> Bool_Det
 eqcolonlteq_Det# a1 a2 =
