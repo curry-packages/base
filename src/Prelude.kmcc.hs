@@ -1516,12 +1516,17 @@ fromSomeException e = P.IOError P.Nothing P.OtherError "" ("IOERR_ " P.++ P.show
 
 catch_ND# :: Curry (LiftedFunc (IO_Det a) (LiftedFunc (LiftedFunc IOError_ND (IO_Det a)) (IO_Det a)))
 catch_ND# = P.return (Func (\ioND -> P.return (Func (\contND -> do
-  io <- BasicDefinitions.ensureOneResult ioND
-  Func cont <- BasicDefinitions.ensureOneResult contND
-  let res = P.unsafePerformIO (P.unsafeInterleaveIO (P.try io))
-  case res of
-    P.Left e  -> cont (fromHaskell (fromForeign (P.fromMaybe (fromSomeException e) (P.fromException e))))
-    P.Right x -> P.return (P.return x)))))
+  eith_io <- BasicDefinitions.ensureOneResult_Either ioND
+  case eith_io of
+    P.Left err -> catchErr contND (P.SomeException err)
+    P.Right io -> do
+      case P.unsafePerformIO (P.unsafeInterleaveIO (P.try io)) of
+        P.Right x -> P.return (P.return x)
+        P.Left e  -> catchErr contND e))))
+  where
+    catchErr contND err = do
+      Func cont <-BasicDefinitions.ensureOneResult contND
+      cont (fromHaskell (fromForeign (P.fromMaybe (fromSomeException err) (P.fromException err))))
 
 primuscoreerror_Det# :: CList_Det Char_Det -> a
 primuscoreerror_Det# xs = P.throw (toForeign (UserError_Det xs))
