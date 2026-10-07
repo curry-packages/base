@@ -15,8 +15,8 @@
 -- in particular, set functions (see module `Control.Search.SetFunctions`
 -- which should be used.
 --
--- | Author : Michael Hanus
---   Version: February 2025
+-- Author : Michael Hanus
+-- Version: February 2025
 ------------------------------------------------------------------------------
 {-# LANGUAGE CPP #-}
 
