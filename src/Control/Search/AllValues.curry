@@ -22,8 +22,7 @@ import Control.Search.Unsafe
 --   Conceptually, the value is computed on a copy of the expression,
 --   i.e., the evaluation of the expression does not share any results.
 --   In PAKCS, the evaluation suspends as long as the expression
---   contains unbound variables or the computed
---   value contains unbound variables.
+--   or its computed value contain unbound variables.
 getAllValues :: a -> IO [a]
 getAllValues e = return (allValues e)
 
@@ -32,8 +31,7 @@ getAllValues e = return (allValues e)
 --   Conceptually, the value is computed on a copy of the expression,
 --   i.e., the evaluation of the expression does not share any results.
 --   In PAKCS, the evaluation suspends as long as the expression
---   contains unbound variables or the computed
---   value contains unbound variables.
+--   or its computed value contain unbound variables.
 getOneValue :: a -> IO (Maybe a)
 getOneValue x = return (oneValue x)
 

@@ -35,9 +35,8 @@ import qualified Control.Search.SearchTree as ST
 -- Conceptually, the value is computed on a copy of the expression,
 -- i.e., the evaluation of the expression does not share any results.
 -- In PAKCS, the evaluation suspends as long as the expression
--- contains unbound variables or the computed
--- value contains unbound variables.
----
+-- or its computed value contain unbound variables.
+--
 -- Note that this operation is not purely declarative since the ordering
 -- of the computed values depends on the ordering of the program rules.
 allValues :: a -> [a]
@@ -52,13 +51,12 @@ allValues external
 -- Conceptually, the value is computed on a copy of the expression,
 -- i.e., the evaluation of the expression does not share any results.
 -- In PAKCS, the evaluation suspends as long as the expression
--- contains unbound variables or the computed
--- value contains unbound variables.
----
+-- or its computed value contain unbound variables.
+--
 -- Note that this operation is not purely declarative since
 -- the computed value depends on the ordering of the program rules.
 -- Thus, this operation should be used only if the expression
--- has a single value.
+-- has at most one value.
 oneValue :: a -> Maybe a
 #ifdef __KICS2__
 oneValue x =
@@ -73,9 +71,8 @@ oneValue external
 -- Conceptually, the value is computed on a copy of the expression,
 -- i.e., the evaluation of the expression does not share any results.
 -- In PAKCS, the evaluation suspends as long as the expression
--- contains unbound variables or the computed
--- value contains unbound variables.
----
+-- or its computed value contain unbound variables.
+--
 -- Note that this operation is not purely declarative since
 -- the computed value depends on the ordering of the program rules.
 -- Thus, this operation should be used only if the expression
