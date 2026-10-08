@@ -1,17 +1,18 @@
 ------------------------------------------------------------------------------
--- | Author : Michael Hanus
---   Version: October 2023
---
--- Library with operations to encapsulate search, i.e., non-deterministic
--- computations, as I/O operations in order to make the results dependend
--- on the external world, e.g., the schedule for non-determinism.
+-- Library with operations to encapsulate search, i.e., to return all or
+-- some values of an expression containing non-deterministic computations
+-- in a data strcuture, as I/O operations in order to make the results
+-- dependend on the external world, e.g., the schedule for non-determinism.
 --
 -- To encapsulate search in non-I/O computations, one can use
--- set functions (see module `Control.Search.SetFunctions`.
+-- set functions (see module `Control.Search.SetFunctions`).
+--
+-- Author : Michael Hanus
+-- Version: October 2026
 ------------------------------------------------------------------------------
 
 module Control.Search.AllValues
-  ( getAllValues, getOneValue, getAllFailures )
+  ( getAllValues, getAllValuesDFS, getOneValue, getOneValueDFS, getAllFailures )
  where
 
 import Control.Search.Unsafe
@@ -19,21 +20,53 @@ import Control.Search.Unsafe
 ------------------------------------------------------------------------------
 
 -- | Gets all values of an expression (similarly to Prolog's `findall`).
---   Conceptually, the value is computed on a copy of the expression,
---   i.e., the evaluation of the expression does not share any results.
+-- Conceptually, the value is computed on a copy of the expression,
+-- i.e., the evaluation of the expression does not share any results.
+--
+-- The strategy to search for all values depends on the Curry system:
+--
+-- * PAKCS uses a depth-first search strategy and computes all values at once,
+-- * KiCS2 uses a breadth-first search strategy and computes all values lazily.
+-- * Curry2Go uses a fair search strategy and computes all values lazily.
+--
 --   In PAKCS, the evaluation suspends as long as the expression
 --   or its computed value contain unbound variables.
 getAllValues :: a -> IO [a]
 getAllValues e = return (allValues e)
 
--- | Gets one value of an expression. Returns `Nothing` if the search space
---   is finitely failed.
---   Conceptually, the value is computed on a copy of the expression,
---   i.e., the evaluation of the expression does not share any results.
---   In PAKCS, the evaluation suspends as long as the expression
---   or its computed value contain unbound variables.
+-- | Gets all values of an expression.
+-- This operation is similar to 'getAllValues' but uses a depth-first search
+-- strategy (if available).
+-- Thus, it could be more efficient than 'getAllValues' but it might
+-- not terminate (instead of computing of all values) if the search space
+-- is infinite.
+getAllValuesDFS :: a -> IO [a]
+getAllValuesDFS e = return (allValuesDFS e)
+
+-- | Gets one value of an expression or `Nothing`
+-- if the expression has no value.
+-- Conceptually, the value is computed on a copy of the expression,
+-- i.e., the evaluation of the expression does not share any results.
+--
+-- The strategy to search for a value depends on the Curry system:
+--
+-- * PAKCS uses a depth-first search strategy,
+-- * KiCS2 uses a breadth-first search strategy, and
+-- * Curry2Go uses a fair search strategy.
+--
+-- In PAKCS, the evaluation suspends as long as the expression
+-- or its computed value contain unbound variables.
 getOneValue :: a -> IO (Maybe a)
 getOneValue x = return (oneValue x)
+
+-- | Gets one value of an expression or `Nothing`
+-- if the expression has no value.
+-- This operation is similar to 'getOneValue' but uses a depth-first search
+-- strategy (if available).
+-- Thus, it could be more efficient than 'getOneValue' but it might not terminate
+-- (instead of computing of value) if the search space is infinite.
+getOneValueDFS :: a -> IO (Maybe a)
+getOneValueDFS x = return (oneValueDFS x)
 
 -- | Returns a list of values that do not satisfy a given constraint.
 -- As a simple example, the expression
