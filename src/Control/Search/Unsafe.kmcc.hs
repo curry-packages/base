@@ -16,11 +16,11 @@ searchdotUnsafedotoneValue_Det# e = if BD.isBottomNF e
 
 searchdotUnsafedotallValues_ND# :: MC.Curryable a => B.Curry (B.LiftedFunc a (CList_ND a))
 searchdotUnsafedotallValues_ND# = BD.returnFunc P.$ \x -> S.get P.>>= \s -> P.return P.$
-  toCurryList (evalWith MC.BFS x s)
+  toCurryList (evalWith MC.FS x s)
 
 searchdotUnsafedotoneValue_ND# :: MC.Curryable a => B.Curry (B.LiftedFunc a (Maybe_ND a))
 searchdotUnsafedotoneValue_ND# = BD.returnFunc P.$ \x -> S.get P.>>= \s -> P.return P.$
-  toCurryMaybe (evalWith MC.BFS x s)
+  toCurryMaybe (evalWith MC.FS x s)
 
 searchdotUnsafedotallValuesDFS_Det# :: BD.Curryable a => BD.HsEquivalent a -> CList_Det (BD.HsEquivalent a)
 searchdotUnsafedotallValuesDFS_Det# = searchdotUnsafedotallValues_Det#
