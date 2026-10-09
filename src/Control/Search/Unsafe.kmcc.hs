@@ -22,6 +22,20 @@ searchdotUnsafedotoneValue_ND# :: MC.Curryable a => B.Curry (B.LiftedFunc a (May
 searchdotUnsafedotoneValue_ND# = BD.returnFunc P.$ \x -> S.get P.>>= \s -> P.return P.$
   toCurryMaybe (evalWith MC.BFS x s)
 
+searchdotUnsafedotallValuesDFS_Det# :: BD.Curryable a => BD.HsEquivalent a -> CList_Det (BD.HsEquivalent a)
+searchdotUnsafedotallValuesDFS_Det# = searchdotUnsafedotallValues_Det#
+
+searchdotUnsafedotoneValueDFS_Det# :: BD.Curryable a => BD.HsEquivalent a -> Maybe_Det (BD.HsEquivalent a)
+searchdotUnsafedotoneValueDFS_Det# = searchdotUnsafedotoneValue_Det#
+
+searchdotUnsafedotallValuesDFS_ND# :: MC.Curryable a => B.Curry (B.LiftedFunc a (CList_ND a))
+searchdotUnsafedotallValuesDFS_ND# = BD.returnFunc P.$ \x -> S.get P.>>= \s -> P.return P.$
+  toCurryList (evalWith MC.DFS x s)
+
+searchdotUnsafedotoneValueDFS_ND# :: MC.Curryable a => B.Curry (B.LiftedFunc a (Maybe_ND a))
+searchdotUnsafedotoneValueDFS_ND# = BD.returnFunc P.$ \x -> S.get P.>>= \s -> P.return P.$
+  toCurryMaybe (evalWith MC.DFS x s)
+
 evalWith :: MC.Curryable a => MC.SearchMode -> B.Curry a -> MC.NDState -> [a]
 evalWith sm x s = BD.search sm (MC.evalCurryTreeWith (BD.groundNormalForm x) s { MC.searchMode = sm })
 
