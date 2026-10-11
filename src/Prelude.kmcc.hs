@@ -1133,10 +1133,10 @@ amp_ND# :: Curry (LiftedFunc Bool_ND (LiftedFunc Bool_ND Bool_ND))
 amp_ND# = BasicDefinitions.liftConvert2 amp_Det#
 
 eqcolonlteq_ND# :: Curryable a => Curry (LiftedFunc a (LiftedFunc a Bool_ND))
-eqcolonlteq_ND# = B.returnFunc (\a1 -> B.returnFunc (\a2 -> B.unifyL Set.empty a1 a2 M.>> B.fromHaskell (B.fromForeign P.True)))
+eqcolonlteq_ND# = B.returnFunc (\a1 -> B.returnFunc (\a2 -> B.unifyL (Set.empty, P.False) a1 a2 M.>> B.fromHaskell (B.fromForeign P.True)))
 
 eqcoloneq_ND# :: Curryable a => Curry (LiftedFunc a (LiftedFunc a Bool_ND))
-eqcoloneq_ND# = B.returnFunc (\a1 -> B.returnFunc (\a2 -> B.unify Set.empty a1 a2 M.>> B.fromHaskell (B.fromForeign P.True)))
+eqcoloneq_ND# = B.returnFunc (\a1 -> B.returnFunc (\a2 -> B.unify (Set.empty, P.False) a1 a2 M.>> B.fromHaskell (B.fromForeign P.True)))
 
 eqcolonlteq_Det# :: forall a a'. (Curryable a', HsEquivalent a' ~ a) => a -> a -> Bool_Det
 eqcolonlteq_Det# a1 a2 =
