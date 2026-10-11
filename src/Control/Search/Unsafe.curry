@@ -40,6 +40,7 @@ import qualified Control.Search.SearchTree as ST
 --
 -- * PAKCS uses a depth-first search strategy and computes all values at once,
 -- * KiCS2 uses a breadth-first search strategy and computes all values lazily.
+-- * KMCC uses a fair search strategy and computes all values lazily.
 -- * Curry2Go uses a fair search strategy and computes all values lazily.
 --
 -- In PAKCS, the evaluation suspends as long as the expression
@@ -80,6 +81,7 @@ allValuesDFS external
 --
 -- * PAKCS uses a depth-first search strategy,
 -- * KiCS2 uses a breadth-first search strategy, and
+-- * KMCC uses a fair search strategy.
 -- * Curry2Go uses a fair search strategy.
 --
 -- In PAKCS, the evaluation suspends as long as the expression
@@ -112,8 +114,6 @@ oneValueDFS x =
 #elif defined(__PAKCS__)
 oneValueDFS x = oneValue x  -- PAKCS supports only depth-first search
 #elif defined(__CURRY2GO__)
-oneValueDFS x = oneValue x  -- TODO: implement as external operation
-#elif defined(__KMCC__)
 oneValueDFS x = oneValue x  -- TODO: implement as external operation
 #else
 oneValueDFS external
