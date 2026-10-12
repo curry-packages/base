@@ -582,7 +582,27 @@ hnfAndWaitUntilGroundHNF(X,E0,E) :-
 % (first argument must be the functional pattern):
 :- block 'Prelude.nonstrictEq'(?,?,?,-,?).
 'Prelude.nonstrictEq'(A,B,R,E0,E):-
-        user:hnf(A,HA,E0,E1), unifEq1(HA,B,R,E1,E).
+        unifEqPatternArg(A,B,R,E0,E).
+
+% A free variable produced by evaluating a functional pattern is not a
+% pattern variable and must not be bound to the matched argument.
+unifEqPatternArg(share(M
+),B,R,E0,E) :- nonvar(M), !,
+        get_mutable(V,M),
+        (var(V)
+         -> unifEq1(V,B,R,E0,E)
+         ; user:hnf(share(M),HA,E0,E1),
+           (var(HA)
+            -> prim_failure(partcall(2,'Prelude.=:<=',[]),[share(M),B],
+                            R,E1,E)
+            ; unifEq1(HA,B,R,E1,E))).
+unifEqPatternArg(A,B,R,E0,E) :-
+        (var(A)
+         -> unifEq1(A,B,R,E0,E)
+         ; user:hnf(A,HA,E0,E1),
+           (var(HA)
+            -> prim_failure(partcall(2,'Prelude.=:<=',[]),[A,B],R,E1,E)
+            ; unifEq1(HA,B,R,E1,E))).
 
 :- block unifEq1(?,?,?,-,?).
 % In the following clause, we bind a functional pattern variable to the
@@ -716,7 +736,24 @@ genUnifEqHnfBody(N,Arity,A,B,'Prelude.&'('Prelude.nonstrictEq'(ArgA,ArgB),G)):-
 % At call time, the first argument must be the function pattern.
 :- block unifEqLinear(?,?,?,-,?).
 unifEqLinear(A,B,R,E0,E):-
-	user:hnf(A,HA,E0,E1), unifEqLinear1(HA,B,R,E1,E).
+	unifEqLinearPatternArg(A,B,R,E0,E).
+
+unifEqLinearPatternArg(share(M),B,R,E0,E) :- nonvar(M), !,
+	get_mutable(V,M),
+	(var(V)
+	 -> unifEqLinear1(V,B,R,E0,E)
+	 ; user:hnf(share(M),HA,E0,E1),
+	   (var(HA)
+	    -> prim_failure(partcall(2,'Prelude.=:<<=',[]),[share(M),B],
+	                    R,E1,E)
+	    ; unifEqLinear1(HA,B,R,E1,E))).
+unifEqLinearPatternArg(A,B,R,E0,E) :-
+	(var(A)
+	 -> unifEqLinear1(A,B,R,E0,E)
+	 ; user:hnf(A,HA,E0,E1),
+	   (var(HA)
+	    -> prim_failure(partcall(2,'Prelude.=:<<=',[]),[A,B],R,E1,E)
+	    ; unifEqLinear1(HA,B,R,E1,E))).
 
 :- block unifEqLinear1(?,?,?,-,?).
 % In the following clause, we bind a function pattern variable to the
